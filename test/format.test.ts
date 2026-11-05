@@ -32,6 +32,7 @@ describe('logStatus', () => {
 
   it('accepts a tone override and a missing status', () => {
     assert.equal(logStatus(undefined), `${ESC}[90m● unknown${ESC}[0m`)
+    assert.equal(logStatus(''), `${ESC}[90m● unknown${ESC}[0m`)
     assert.equal(logStatus('AVAILABLE', 'idle'), `${ESC}[90m● AVAILABLE${ESC}[0m`)
   })
 })

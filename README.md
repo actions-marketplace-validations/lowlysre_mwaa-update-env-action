@@ -1,117 +1,100 @@
+<p align="center">
+  <img src="docs/public/social-card.svg" alt="MWAA Update Environment: update Amazon MWAA from GitHub Actions and wait until it is available again" width="720">
+</p>
+
+<p align="center">
+  <a href="https://github.com/lowlysre/mwaa-update-env-action/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lowlysre/mwaa-update-env-action/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/lowlysre/mwaa-update-env-action"></a>
+</p>
+
 # MWAA Update Environment
 
-Updates an Amazon MWAA environment with `UpdateEnvironment`, the API behind `aws mwaa update-environment`, and optionally waits until the environment is `AVAILABLE` again.
+Update an Amazon MWAA environment from GitHub Actions and, optionally, wait until it is `AVAILABLE` again. The action calls the same API as `aws mwaa update-environment`, sends only the settings you set, and fails the step if the update fails.
 
-The action authenticates with ordinary AWS credentials from the environment, so it works after [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) with no MWAA CLI tokens. It calls the AWS SDK for JavaScript directly, so the runner needs no AWS CLI and the behavior doesn't depend on the CLI version.
+It authenticates with the AWS credentials already in the job environment, so it needs no MWAA CLI tokens and no AWS CLI on the runner. Run [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) first.
 
-## Usage
+This action is built and maintained by [lowlysre](https://github.com/lowlysre). It's an independent project, not affiliated with or endorsed by AWS.
+
+## Quick start
+
+This example assumes the repository can use GitHub OIDC to assume an AWS role that can update the environment. See [AWS credentials and permissions](docs/how-to/aws-credentials.md) for the trust policy and the IAM actions the role needs.
 
 ```yaml
 permissions:
-  id-token: write
   contents: read
+  id-token: write
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::123456789012:role/mwaa-deployer
-          aws-region: us-east-1
+steps:
+  - uses: actions/checkout@v7
 
-      - id: mwaa
-        uses: lowlysre/mwaa-update-env-action@v1
-        with:
-          name: my-environment
-          requirements-s3-path: requirements.txt
-          requirements-s3-object-version: ${{ steps.upload.outputs.requirements-version }}
-          worker-replacement-strategy: GRACEFUL
-          wait: true
-          timeout: 5400
+  - uses: aws-actions/configure-aws-credentials@v6
+    with:
+      role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+      aws-region: us-east-1
 
-      - run: echo "requirements.txt version ${{ steps.mwaa.outputs.requirements-s3-object-version }}"
+  - id: upload
+    name: Upload requirements.txt
+    run: |
+      version=$(aws s3api put-object --bucket my-mwaa-bucket --key requirements.txt \
+        --body requirements.txt --query VersionId --output text)
+      echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  - id: mwaa
+    uses: lowlysre/mwaa-update-env-action@v1
+    with:
+      name: my-environment
+      requirements-s3-path: requirements.txt
+      requirements-s3-object-version: ${{ steps.upload.outputs.version }}
+      wait: true
+      timeout: 3600
+
+  - run: echo "Now running requirements.txt ${{ steps.mwaa.outputs.requirements-s3-object-version }}"
 ```
 
-Only inputs you set are sent. Settings you leave out keep their current value in MWAA. The action fails before calling AWS if no update input is set.
+MWAA requires a new S3 object version each time `requirements.txt`, `plugins.zip`, or the startup script changes, which is why the upload step captures the version ID. Pin third-party actions to full commit SHAs in production workflows.
 
-## Inputs
+With `wait: true`, the step succeeds once the environment is `AVAILABLE` and the update it submitted shows `SUCCESS`. A typical update takes 20 to 30 minutes. See [wait for an update to finish](docs/how-to/wait-for-update.md) to size `timeout` and read the failure modes.
 
-| Input | Description |
+## What you get
+
+Each run logs the requested changes, streams status while it waits, and writes a job summary with the final environment state.
+
+| Feature | Behavior |
 | --- | --- |
-| `name` | Environment name. Required. |
-| `airflow-version` | Airflow version to upgrade or downgrade to. |
-| `source-bucket-arn` | ARN of the S3 bucket that holds DAGs, plugins, requirements and the startup script. |
-| `execution-role-arn` | ARN of the execution role. |
-| `dag-s3-path` | Relative path of the DAGs folder. |
-| `plugins-s3-path`, `plugins-s3-object-version` | Path and S3 object version of `plugins.zip`. |
-| `requirements-s3-path`, `requirements-s3-object-version` | Path and S3 object version of `requirements.txt`. |
-| `startup-script-s3-path`, `startup-script-s3-object-version` | Path and S3 object version of the startup script. |
-| `environment-class` | For example `mw1.small`. |
-| `min-workers`, `max-workers` | Worker autoscaling bounds. |
-| `min-webservers`, `max-webservers` | Web server autoscaling bounds. |
-| `schedulers` | Scheduler count. |
-| `worker-replacement-strategy` | `FORCED` stops workers immediately. `GRACEFUL` lets running tasks finish for up to 12 hours. |
-| `webserver-access-mode` | `PRIVATE_ONLY`, `PUBLIC_ONLY`, or `PUBLIC_AND_PRIVATE` (Airflow 3.2 and later). |
-| `weekly-maintenance-window-start` | For example `SAT:03:00`, in UTC, on 30 minute boundaries. |
-| `airflow-configuration-options` | JSON object, for example `{"core.default_timezone":"utc"}`. |
-| `network-configuration` | JSON object with `SecurityGroupIds`. |
-| `logging-configuration` | JSON object in the API's `LoggingConfiguration` shape. |
-| `region` | AWS region. Defaults to the region from the AWS environment variables. |
-| `wait` | `true` waits for the update to finish. Default `false`. |
-| `poll-interval` | Seconds between status checks while waiting. Default `30`. |
-| `timeout` | Seconds to wait before failing. Default `3600`. |
+| Partial updates | Only inputs you set are sent. Everything else keeps its current value. |
+| Input validation | Bad numbers, bad JSON, and `min-*` above `max-*` fail before any AWS call. |
+| Wait mode | Polls until the new update succeeds, fails the step on `FAILED`, `UPDATE_FAILED`, `UNAVAILABLE`, or timeout, and surfaces the MWAA error code and message. |
+| Outputs | Final status, last update status, ARN, Airflow version, and the S3 object versions in use. Set even when a waited update fails. |
+| No CLI dependency | Uses the AWS SDK for JavaScript, so runner CLI versions don't matter. |
 
-Integer inputs must be at least 1, `min-*` can't exceed `max-*`, and the JSON inputs must be JSON objects. Invalid values fail the step with a message naming the input.
+## This action or the AWS CLI
 
-## Outputs
+You can run `aws mwaa update-environment` in a `run` step. This action covers the parts the CLI leaves to you.
 
-| Output | Description |
-| --- | --- |
-| `status` | Environment status when the action finished, for example `AVAILABLE` or `UPDATING`. |
-| `last-update-status` | `SUCCESS`, `PENDING`, or `FAILED`. |
-| `environment-arn` | Environment ARN. |
-| `airflow-version` | Airflow version in use. |
-| `requirements-s3-object-version` | `requirements.txt` version in use. |
-| `plugins-s3-object-version` | `plugins.zip` version in use. |
-| `startup-script-s3-object-version` | Startup script version in use. |
+| Need | This action | AWS CLI in a `run` step |
+| --- | --- | --- |
+| Update environment settings | ✅ | ✅ |
+| Send only the settings you set | ✅ Unset inputs are omitted | Build the argument list yourself |
+| Wait for the update to finish | ✅ `wait: true` | Poll `get-environment` in a script |
+| Tell a new update from the previous one while polling | ✅ | Compare `LastUpdate.CreatedAt` yourself |
+| Fail the step with the MWAA error message | ✅ | Parse `LastUpdate.Error` yourself |
+| Step log groups and job summary | ✅ | ❌ |
+| Needs the AWS CLI on the runner | No | Yes |
 
-Outputs are set after the update is submitted, and also when a waited update fails, so later steps with `if: always()` can read them.
+How the pieces fit together is in [how the action works](docs/explanation/how-it-works.md).
 
-## Waiting
+## Documentation
 
-With `wait: true`, the action polls `GetEnvironment` every `poll-interval` seconds.
-
-- It succeeds when the environment is `AVAILABLE` and the update it submitted has `LastUpdate.Status` of `SUCCESS`. A previous update's result is ignored until MWAA records the new one.
-- It fails when `LastUpdate.Status` is `FAILED`, or when the environment reaches `UPDATE_FAILED` or `UNAVAILABLE`. The error code and message from MWAA appear in the log.
-- `ROLLING_BACK` and `CREATING_SNAPSHOT` keep polling.
-- It fails after `timeout` seconds. The update keeps running in MWAA.
-
-MWAA updates commonly take 20 to 30 minutes, and a `GRACEFUL` replacement can take up to 12 hours, so raise `timeout` to match.
-
-The environment must be `AVAILABLE` when the action starts. Otherwise MWAA rejects the update, and the action fails early with the current status.
-
-Each run writes a job summary with the requested changes and the final environment state.
-
-## Permissions
-
-The AWS role needs these actions on the environment:
-
-- `airflow:GetEnvironment`
-- `airflow:UpdateEnvironment`
-
-Changing `execution-role-arn` also requires `iam:PassRole` on the new role.
-
-## Development
-
-```sh
-npm ci
-npm run check   # typecheck and tests
-npm run build   # bundles src/ into dist/
-```
-
-Tests run on the built-in Node test runner. `dist/` is committed because the action runs it directly, and CI fails when it is stale.
+- [Inputs and outputs](docs/reference/inputs.md)
+- [AWS credentials and permissions](docs/how-to/aws-credentials.md)
+- [Wait for an update to finish](docs/how-to/wait-for-update.md)
+- [How the action works](docs/explanation/how-it-works.md)
+- [Contributing](.github/CONTRIBUTING.md)
 
 ## License
 
-[MIT](LICENSE)
+Copyright 2026 lowlysre / John McCall. This action is licensed under the [MIT License](LICENSE).
+
+The action runs a bundled build in `dist/` that includes third-party code, mainly the AWS SDK for JavaScript (Apache-2.0) and the GitHub Actions toolkit (MIT). [dist/THIRD_PARTY_NOTICES.txt](dist/THIRD_PARTY_NOTICES.txt) lists every bundled package with its license text and attributions, and the build regenerates it.
+
+AWS, Amazon MWAA, and Amazon S3 are trademarks of Amazon.com, Inc. or its affiliates. This project is independent and not affiliated with or endorsed by AWS.

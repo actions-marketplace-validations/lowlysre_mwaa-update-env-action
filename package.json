@@ -9,7 +9,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.cjs --legal-comments=none",
+    "build": "node scripts/build.js",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"test/**/*.test.ts\"",
     "check": "npm run typecheck && npm test"

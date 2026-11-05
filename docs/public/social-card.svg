@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="t d">
+  <title id="t">MWAA Update Environment</title>
+  <desc id="d">Update an Amazon MWAA environment from GitHub Actions and wait until it is available again.</desc>
+  <rect width="1280" height="640" fill="#0d1117"/>
+  <rect x="40" y="40" width="1200" height="560" rx="16" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+  <circle cx="86" cy="86" r="10" fill="#ff5f56"/>
+  <circle cx="118" cy="86" r="10" fill="#ffbd2e"/>
+  <circle cx="150" cy="86" r="10" fill="#27c93f"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="34">
+    <text x="90" y="200" fill="#8b949e">$ <tspan fill="#e6edf3">uses: lowlysre/mwaa-update-env-action@v1</tspan></text>
+    <text x="90" y="280" fill="#8b949e">  Submitting update to <tspan fill="#79c0ff">my-environment</tspan>...</text>
+    <text x="90" y="340" fill="#d29922">⏳ UPDATING <tspan fill="#8b949e" font-size="28">(update: PENDING, 840s)</tspan></text>
+    <text x="90" y="400" fill="#3fb950">✅ AVAILABLE <tspan fill="#8b949e" font-size="28">(update: SUCCESS, 1260s)</tspan></text>
+  </g>
+  <text x="90" y="520" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="56" font-weight="700" fill="#e6edf3">MWAA Update Environment</text>
+  <text x="90" y="568" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="28" fill="#f0883e">Update Amazon MWAA from CI with plain AWS credentials</text>
+</svg>

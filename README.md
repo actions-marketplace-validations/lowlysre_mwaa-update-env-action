@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/public/social-card.svg" alt="MWAA Update Environment: update Amazon MWAA from GitHub Actions and wait until it is available again" width="720">
+  <img src="docs/public/social-card.png" alt="MWAA Update Environment: update Amazon MWAA from GitHub Actions and wait until it is available again" width="720">
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@ This action is built and maintained by [lowlysre](https://github.com/lowlysre). 
 
 ## Quick start
 
-This example assumes the repository can use GitHub OIDC to assume an AWS role that can update the environment. See [AWS credentials and permissions](docs/how-to/aws-credentials.md) for the trust policy and the IAM actions the role needs.
+This example assumes the repository can use GitHub OIDC to assume an AWS role that can update the environment. See [AWS credentials and permissions](docs/guides.md#aws-credentials-and-permissions) for the trust policy and the IAM actions the role needs.
 
 ```yaml
 permissions:
@@ -53,7 +53,7 @@ steps:
 
 MWAA requires a new S3 object version each time `requirements.txt`, `plugins.zip`, or the startup script changes, which is why the upload step captures the version ID. Pin third-party actions to full commit SHAs in production workflows.
 
-With `wait: true`, the step succeeds once the environment is `AVAILABLE` and the update it submitted shows `SUCCESS`. A typical update takes 20 to 30 minutes. See [wait for an update to finish](docs/how-to/wait-for-update.md) to size `timeout` and read the failure modes.
+With `wait: true`, the step succeeds once the environment is `AVAILABLE` and the update it submitted shows `SUCCESS`. A typical update takes 20 to 30 minutes. See [wait for an update to finish](docs/guides.md#wait-for-an-update-to-finish) to size `timeout` and read the failure modes.
 
 ## Features
 
@@ -81,21 +81,19 @@ You can run `aws mwaa update-environment` in a `run` step. This action covers th
 | Step log groups and job summary | ✅ | ❌ |
 | Needs the AWS CLI on the runner | No | Yes |
 
-How the pieces fit together is in [how the action works](docs/explanation/how-it-works.md).
+How the pieces fit together is in [how the action works](docs/how-it-works.md).
 
 ## Related actions
 
 - [mwaa-get-env-action](https://github.com/lowlysre/mwaa-get-env-action) reads an environment with `GetEnvironment` and exposes its status, Airflow version, and the S3 paths and object versions it runs. Use it to read the current state before an update or to confirm the result afterward. Its output names match this action's, for example `status`, `last-update-status`, and `requirements-s3-object-version`.
 
-The [recipes](docs/how-to/recipes.md) combine both: read the environment, upload and apply a change, wait for `AVAILABLE`, and confirm the deployed version.
+The [guides](docs/guides.md#read-update-and-confirm) combine both: read the environment, upload and apply a change, wait for `AVAILABLE`, and confirm the deployed version.
 
 ## Documentation
 
-- [Inputs and outputs](docs/reference/inputs.md)
-- [AWS credentials and permissions](docs/how-to/aws-credentials.md)
-- [Wait for an update to finish](docs/how-to/wait-for-update.md)
-- [Recipes with mwaa-get-env-action](docs/how-to/recipes.md)
-- [How the action works](docs/explanation/how-it-works.md)
+- [Reference](docs/reference.md): every input and output, and what fails validation
+- [Guides](docs/guides.md): credentials, waiting, a combined workflow with mwaa-get-env-action, and troubleshooting
+- [How the action works](docs/how-it-works.md)
 - [Contributing](.github/CONTRIBUTING.md)
 
 ## License

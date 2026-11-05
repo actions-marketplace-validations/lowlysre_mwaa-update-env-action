@@ -1,17 +1,66 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="t d">
-  <title id="t">MWAA Update Environment</title>
-  <desc id="d">Update an Amazon MWAA environment from GitHub Actions and wait until it is available again.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#c9d1d9" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow" cx="1040" cy="40" r="620" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f0883e" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#f0883e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="80" y1="0" x2="600" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f9c46b"/>
+      <stop offset="1" stop-color="#e98475"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="80" y1="0" x2="270" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f9c46b"/>
+      <stop offset="1" stop-color="#f0883e"/>
+    </linearGradient>
+  </defs>
+
   <rect width="1280" height="640" fill="#0d1117"/>
-  <rect x="40" y="40" width="1200" height="560" rx="16" fill="#161b22" stroke="#30363d" stroke-width="2"/>
-  <circle cx="86" cy="86" r="10" fill="#ff5f56"/>
-  <circle cx="118" cy="86" r="10" fill="#ffbd2e"/>
-  <circle cx="150" cy="86" r="10" fill="#27c93f"/>
-  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="34">
-    <text x="90" y="200" fill="#8b949e">$ <tspan fill="#e6edf3">uses: lowlysre/mwaa-update-env-action@v1</tspan></text>
-    <text x="90" y="280" fill="#8b949e">  Submitting update to <tspan fill="#79c0ff">my-environment</tspan>...</text>
-    <text x="90" y="340" fill="#d29922">⏳ UPDATING <tspan fill="#8b949e" font-size="28">(update: PENDING, 840s)</tspan></text>
-    <text x="90" y="400" fill="#3fb950">✅ AVAILABLE <tspan fill="#8b949e" font-size="28">(update: SUCCESS, 1260s)</tspan></text>
+  <rect width="1280" height="640" fill="url(#grid)"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <!-- Mark: an update arrow closing around a check that ends in the worm from the sibling actions, scaled from a 64-unit grid. -->
+  <g transform="translate(78 78) scale(0.875)">
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="#1b2a41"/>
+    <path d="M39.5 19A15 15 0 1 1 24.5 19" fill="none" stroke="#f0883e" stroke-width="4" stroke-linecap="round"/>
+    <path d="M17.6 17.4L24.5 19L22.3 25.9" fill="none" stroke="#f0883e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24 33.5L28.5 38L36.5 29.5" fill="none" stroke="#3fb950" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="24" cy="33.5" r="2.6" fill="#3fb950"/>
+    <circle cx="37.7" cy="28.2" r="4" fill="#3fb950"/>
+    <circle cx="38.9" cy="27" r="1" fill="#1b2a41"/>
   </g>
-  <text x="90" y="520" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="56" font-weight="700" fill="#e6edf3">MWAA Update Environment</text>
-  <text x="90" y="568" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="28" fill="#f0883e">Update Amazon MWAA from CI with plain AWS credentials</text>
+
+  <g font-family="Segoe UI" font-weight="700" font-size="72" fill="url(#title)">
+    <text x="78" y="226">MWAA Update</text>
+    <text x="78" y="306">Environment</text>
+  </g>
+  <g font-family="Segoe UI" font-size="25" fill="#c9d1d9">
+    <text x="80" y="374">Update an Amazon MWAA environment from</text>
+    <text x="80" y="408">GitHub Actions and wait until it's AVAILABLE.</text>
+  </g>
+  <rect x="80" y="446" width="190" height="4" rx="2" fill="url(#rule)"/>
+  <text x="80" y="548" font-family="Cascadia Mono" font-size="19" fill="#8b949e">lowlysre/mwaa-update-env-action</text>
+  <text x="80" y="580" font-family="Segoe UI" font-size="16" fill="#6e7681">Not affiliated with AWS.</text>
+
+  <g transform="translate(690 108)">
+    <rect width="510" height="424" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+    <circle cx="28" cy="28" r="6" fill="#f85149"/>
+    <circle cx="50" cy="28" r="6" fill="#d29922"/>
+    <circle cx="72" cy="28" r="6" fill="#3fb950"/>
+    <path d="M0 56H510" stroke="#30363d" stroke-width="1.5"/>
+
+    <g font-family="Cascadia Mono" font-size="17" fill="#c9d1d9" xml:space="preserve">
+      <text x="28" y="100" fill="#8b949e"># 1. The action: apply the change, then wait</text>
+      <text x="28" y="134">- <tspan fill="#79c0ff">id</tspan>: <tspan fill="#a5d6a7">mwaa</tspan></text>
+      <text x="28" y="168">  <tspan fill="#79c0ff">uses</tspan>: <tspan fill="#ffa657">lowlysre/mwaa-update-env-action@v1</tspan></text>
+      <text x="28" y="202">  <tspan fill="#79c0ff">with</tspan>:</text>
+      <text x="28" y="236">    <tspan fill="#79c0ff">name</tspan>: <tspan fill="#a5d6a7">my-environment</tspan></text>
+      <text x="28" y="270">    <tspan fill="#79c0ff">max-workers</tspan>: <tspan fill="#d2a8ff">10</tspan></text>
+      <text x="28" y="304">    <tspan fill="#79c0ff">wait</tspan>: <tspan fill="#d2a8ff">true</tspan></text>
+      <text x="28" y="356" fill="#8b949e"># 2. Your step: runs once it's AVAILABLE</text>
+      <text x="28" y="390">- <tspan fill="#79c0ff">run</tspan>: <tspan fill="#a5d6a7">./smoke-test-dags.sh</tspan></text>
+    </g>
+  </g>
 </svg>

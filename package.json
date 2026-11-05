@@ -19,7 +19,7 @@
     "@aws-sdk/client-mwaa": "^3.1162.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.6",
     "esbuild": "^0.28.2",
     "fast-check": "^4.10.2",
     "typescript": "^7.0.2"

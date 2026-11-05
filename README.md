@@ -48,7 +48,7 @@ steps:
       wait: true
       timeout: 3600
 
-  - run: echo "Now running requirements.txt ${{ steps.mwaa.outputs.requirements_s3_object_version }}"
+  - run: echo "Now running requirements.txt ${{ steps.mwaa.outputs.requirements-s3-object-version }}"
 ```
 
 MWAA requires a new S3 object version each time `requirements.txt`, `plugins.zip`, or the startup script changes, which is why the upload step captures the version ID. Pin third-party actions to full commit SHAs in production workflows.
@@ -85,7 +85,7 @@ How the pieces fit together is in [how the action works](docs/explanation/how-it
 
 ## Related actions
 
-- [mwaa-get-env-action](https://github.com/lowlysre/mwaa-get-env-action) reads an environment with `GetEnvironment` and exposes its status, Airflow version, and the S3 paths and object versions it runs. Use it to read the current state before an update or to confirm the result afterward. Its output names match this action's, for example `status`, `last_update_status`, and `requirements_s3_object_version`.
+- [mwaa-get-env-action](https://github.com/lowlysre/mwaa-get-env-action) reads an environment with `GetEnvironment` and exposes its status, Airflow version, and the S3 paths and object versions it runs. Use it to read the current state before an update or to confirm the result afterward. Its output names match this action's, for example `status`, `last-update-status`, and `requirements-s3-object-version`.
 
 The [recipes](docs/how-to/recipes.md) combine both: read the environment, upload and apply a change, wait for `AVAILABLE`, and confirm the deployed version.
 

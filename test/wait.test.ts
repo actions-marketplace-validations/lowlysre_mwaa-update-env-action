@@ -100,6 +100,21 @@ describe('waitForUpdate', () => {
     ])
   })
 
+  it('flags polls that still show the previous update', async () => {
+    const seen: boolean[] = []
+    const responses = [env('AVAILABLE', 'SUCCESS', OLD), env('UPDATING', 'PENDING'), env('AVAILABLE', 'SUCCESS')]
+    let i = 0
+    await waitForUpdate({
+      fetch: async () => responses[i++]!,
+      previousUpdateAt: OLD.getTime(),
+      pollIntervalSeconds: 1,
+      timeoutSeconds: 100,
+      sleep: async () => {},
+      onPoll: (_env, _elapsed, isOurs) => seen.push(isOurs)
+    })
+    assert.deepEqual(seen, [false, true, true])
+  })
+
   it('treats a first-ever update (no previous timestamp) as ours', async () => {
     const final = await waitForUpdate({
       fetch: async () => env('AVAILABLE', 'SUCCESS'),

@@ -94,17 +94,16 @@ inputs:
 outputs:
   status:
     description: Environment status when the action finished (e.g. AVAILABLE, UPDATING).
-  last_update_status:
+  last-update-status:
     description: Status of the last update (SUCCESS, PENDING, FAILED).
-  arn:
-    description: ARN of the environment.
-  airflow_version:
+  environment-arn:
+  airflow-version:
     description: Airflow version of the environment.
-  requirements_s3_object_version:
+  requirements-s3-object-version:
     description: S3 object version of requirements.txt in use.
-  plugins_s3_object_version:
+  plugins-s3-object-version:
     description: S3 object version of plugins.zip in use.
-  startup_script_s3_object_version:
+  startup-script-s3-object-version:
     description: S3 object version of the startup script in use.
 
 runs:

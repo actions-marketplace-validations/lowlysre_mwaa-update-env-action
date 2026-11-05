@@ -48946,10 +48946,10 @@ async function waitForUpdate(options) {
   for (; ; ) {
     const env2 = await options.fetch();
     const elapsed = Math.round((now() - start) / 1e3);
-    options.onPoll?.(env2, elapsed);
     const update = env2.LastUpdate;
     const updatedAt = update?.CreatedAt?.getTime();
     const isOurs = updatedAt !== options.previousUpdateAt;
+    options.onPoll?.(env2, elapsed, isOurs);
     if (FAILED_STATUSES.has(env2.Status ?? "")) {
       throw new UpdateFailedError(`Environment entered ${env2.Status}: ${describeError(env2)}`);
     }
@@ -48979,12 +48979,12 @@ var c5 = {
 };
 var OUTPUT_FIELDS = [
   ["status", (e5) => e5.Status],
-  ["last_update_status", (e5) => e5.LastUpdate?.Status],
-  ["arn", (e5) => e5.Arn],
-  ["airflow_version", (e5) => e5.AirflowVersion],
-  ["requirements_s3_object_version", (e5) => e5.RequirementsS3ObjectVersion],
-  ["plugins_s3_object_version", (e5) => e5.PluginsS3ObjectVersion],
-  ["startup_script_s3_object_version", (e5) => e5.StartupScriptS3ObjectVersion]
+  ["last-update-status", (e5) => e5.LastUpdate?.Status],
+  ["environment-arn", (e5) => e5.Arn],
+  ["airflow-version", (e5) => e5.AirflowVersion],
+  ["requirements-s3-object-version", (e5) => e5.RequirementsS3ObjectVersion],
+  ["plugins-s3-object-version", (e5) => e5.PluginsS3ObjectVersion],
+  ["startup-script-s3-object-version", (e5) => e5.StartupScriptS3ObjectVersion]
 ];
 function setOutputs(env2) {
   for (const [name, read] of OUTPUT_FIELDS) setOutput(name, read(env2) ?? "");
@@ -49053,8 +49053,8 @@ async function run(deps = {}) {
         sleep: deps.sleep,
         pollIntervalSeconds: inputs.pollIntervalSeconds,
         timeoutSeconds: inputs.timeoutSeconds,
-        onPoll: (env2, elapsed) => info(
-          `${statusIcon(env2.Status)} ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(update: ${env2.LastUpdate?.Status ?? "n/a"}, ${elapsed}s)`)}`
+        onPoll: (env2, elapsed, isOurs) => info(
+          isOurs ? `${statusIcon(env2.Status)} ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(update: ${env2.LastUpdate?.Status ?? "n/a"}, ${elapsed}s)`)}` : `\u23F3 ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(waiting for MWAA to start the update, ${elapsed}s)`)}`
         )
       });
     } catch (error3) {

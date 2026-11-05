@@ -20,12 +20,12 @@ const c = {
 
 const OUTPUT_FIELDS: Array<[string, (env: Environment) => string | undefined]> = [
   ['status', (e) => e.Status],
-  ['last_update_status', (e) => e.LastUpdate?.Status],
-  ['arn', (e) => e.Arn],
-  ['airflow_version', (e) => e.AirflowVersion],
-  ['requirements_s3_object_version', (e) => e.RequirementsS3ObjectVersion],
-  ['plugins_s3_object_version', (e) => e.PluginsS3ObjectVersion],
-  ['startup_script_s3_object_version', (e) => e.StartupScriptS3ObjectVersion]
+  ['last-update-status', (e) => e.LastUpdate?.Status],
+  ['environment-arn', (e) => e.Arn],
+  ['airflow-version', (e) => e.AirflowVersion],
+  ['requirements-s3-object-version', (e) => e.RequirementsS3ObjectVersion],
+  ['plugins-s3-object-version', (e) => e.PluginsS3ObjectVersion],
+  ['startup-script-s3-object-version', (e) => e.StartupScriptS3ObjectVersion]
 ]
 
 function setOutputs(env: Environment): void {
@@ -120,9 +120,11 @@ export async function run(deps: RunDependencies = {}): Promise<void> {
         sleep: deps.sleep,
         pollIntervalSeconds: inputs.pollIntervalSeconds,
         timeoutSeconds: inputs.timeoutSeconds,
-        onPoll: (env, elapsed) =>
+        onPoll: (env, elapsed, isOurs) =>
           core.info(
-            `${statusIcon(env.Status)} ${c.yellow(env.Status ?? '?')} ${c.dim(`(update: ${env.LastUpdate?.Status ?? 'n/a'}, ${elapsed}s)`)}`
+            isOurs
+              ? `${statusIcon(env.Status)} ${c.yellow(env.Status ?? '?')} ${c.dim(`(update: ${env.LastUpdate?.Status ?? 'n/a'}, ${elapsed}s)`)}`
+              : `⏳ ${c.yellow(env.Status ?? '?')} ${c.dim(`(waiting for MWAA to start the update, ${elapsed}s)`)}`
           )
       })
     } catch (error) {

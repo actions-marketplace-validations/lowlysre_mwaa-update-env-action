@@ -10,7 +10,8 @@ export interface WaitOptions {
   timeoutSeconds: number
   sleep?: (ms: number) => Promise<void>
   now?: () => number
-  onPoll?: (env: Environment, elapsedSeconds: number) => void
+  // isOurs is false while GetEnvironment still reports the update from before this run.
+  onPoll?: (env: Environment, elapsedSeconds: number, isOurs: boolean) => void
 }
 
 export class UpdateFailedError extends Error {}
@@ -36,12 +37,12 @@ export async function waitForUpdate(options: WaitOptions): Promise<Environment> 
   for (;;) {
     const env = await options.fetch()
     const elapsed = Math.round((now() - start) / 1000)
-    options.onPoll?.(env, elapsed)
 
     const update = env.LastUpdate
     const updatedAt = update?.CreatedAt?.getTime()
     // Until LastUpdate changes we may still be looking at the previous update.
     const isOurs = updatedAt !== options.previousUpdateAt
+    options.onPoll?.(env, elapsed, isOurs)
 
     if (FAILED_STATUSES.has(env.Status ?? '')) {
       throw new UpdateFailedError(`Environment entered ${env.Status}: ${describeError(env)}`)

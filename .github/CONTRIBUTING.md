@@ -8,7 +8,7 @@ npm run check   # typecheck and tests
 npm run build   # bundles src/ into dist/
 ```
 
-- Tests use the built-in Node test runner and run `.ts` files directly, so use Node 24 or later.
+- Tests use the built-in Node test runner and run `.ts` files directly, so use Node 24 or later. `npm test` also measures coverage and fails below 100% lines, 85% branches, or 90% functions. Raise the thresholds in `package.json` when coverage improves.
 - Commit `dist/` with any change under `src/`, including `dist/THIRD_PARTY_NOTICES.txt`, which the build generates from the bundled packages' license files and fails on a package with none. CI rebuilds and fails when `dist/` differs.
 - `test/main.test.ts` runs the real `@actions/core` against temp files and injects a fake MWAA client. Add new behavior there, and put pure logic in `test/inputs.test.ts` or `test/wait.test.ts`.
 - Pin new `uses:` entries in workflows to full commit SHAs with the release tag as a comment, and put `step-security/harden-runner` first in every job with `egress-policy: block` and the endpoints that job needs.

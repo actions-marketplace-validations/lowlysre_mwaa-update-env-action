@@ -20,12 +20,12 @@ const c = {
 
 const OUTPUT_FIELDS: Array<[string, (env: Environment) => string | undefined]> = [
   ['status', (e) => e.Status],
-  ['last-update-status', (e) => e.LastUpdate?.Status],
-  ['environment-arn', (e) => e.Arn],
-  ['airflow-version', (e) => e.AirflowVersion],
-  ['requirements-s3-object-version', (e) => e.RequirementsS3ObjectVersion],
-  ['plugins-s3-object-version', (e) => e.PluginsS3ObjectVersion],
-  ['startup-script-s3-object-version', (e) => e.StartupScriptS3ObjectVersion]
+  ['last_update_status', (e) => e.LastUpdate?.Status],
+  ['arn', (e) => e.Arn],
+  ['airflow_version', (e) => e.AirflowVersion],
+  ['requirements_s3_object_version', (e) => e.RequirementsS3ObjectVersion],
+  ['plugins_s3_object_version', (e) => e.PluginsS3ObjectVersion],
+  ['startup_script_s3_object_version', (e) => e.StartupScriptS3ObjectVersion]
 ]
 
 function setOutputs(env: Environment): void {
@@ -52,11 +52,20 @@ async function writeSummary(
     .addHeading(`MWAA environment update: ${name}`, 2)
     .addRaw(`${statusIcon(env?.Status)} ${outcome}`, true)
     .addHeading('Requested changes', 3)
-    .addTable([[{ data: 'Setting', header: true }, { data: 'Value', header: true }], ...settings])
+    .addTable([
+      [
+        { data: 'Setting', header: true },
+        { data: 'Value', header: true }
+      ],
+      ...settings
+    ])
 
   if (env) {
     core.summary.addHeading('Environment', 3).addTable([
-      [{ data: 'Field', header: true }, { data: 'Value', header: true }],
+      [
+        { data: 'Field', header: true },
+        { data: 'Value', header: true }
+      ],
       ['Status', `${statusIcon(env.Status)} ${env.Status ?? ''}`],
       ['Last update', `${statusIcon(env.LastUpdate?.Status)} ${env.LastUpdate?.Status ?? ''}`],
       ['Airflow version', env.AirflowVersion ?? ''],
@@ -85,7 +94,8 @@ export async function run(deps: RunDependencies = {}): Promise<void> {
 
   core.startGroup(c.bold(`Requested changes for ${c.cyan(name)}`))
   for (const [key, value] of Object.entries(inputs.request)) {
-    if (key !== 'Name') core.info(`  ${c.dim(key.padEnd(30))} ${typeof value === 'object' ? JSON.stringify(value) : value}`)
+    if (key !== 'Name')
+      core.info(`  ${c.dim(key.padEnd(30))} ${typeof value === 'object' ? JSON.stringify(value) : value}`)
   }
   core.endGroup()
 
@@ -111,7 +121,9 @@ export async function run(deps: RunDependencies = {}): Promise<void> {
         pollIntervalSeconds: inputs.pollIntervalSeconds,
         timeoutSeconds: inputs.timeoutSeconds,
         onPoll: (env, elapsed) =>
-          core.info(`${statusIcon(env.Status)} ${c.yellow(env.Status ?? '?')} ${c.dim(`(update: ${env.LastUpdate?.Status ?? 'n/a'}, ${elapsed}s)`)}`)
+          core.info(
+            `${statusIcon(env.Status)} ${c.yellow(env.Status ?? '?')} ${c.dim(`(update: ${env.LastUpdate?.Status ?? 'n/a'}, ${elapsed}s)`)}`
+          )
       })
     } catch (error) {
       core.endGroup()

@@ -81,30 +81,30 @@ inputs:
   wait:
     description: Wait until the environment returns to AVAILABLE; fail if the update fails.
     required: false
-    default: "false"
+    default: 'false'
   poll-interval:
     description: Seconds between status checks when wait is true.
     required: false
-    default: "30"
+    default: '30'
   timeout:
     description: Maximum seconds to wait when wait is true.
     required: false
-    default: "3600"
+    default: '3600'
 
 outputs:
   status:
     description: Environment status when the action finished (e.g. AVAILABLE, UPDATING).
-  last-update-status:
+  last_update_status:
     description: Status of the last update (SUCCESS, PENDING, FAILED).
-  environment-arn:
+  arn:
     description: ARN of the environment.
-  airflow-version:
+  airflow_version:
     description: Airflow version of the environment.
-  requirements-s3-object-version:
+  requirements_s3_object_version:
     description: S3 object version of requirements.txt in use.
-  plugins-s3-object-version:
+  plugins_s3_object_version:
     description: S3 object version of plugins.zip in use.
-  startup-script-s3-object-version:
+  startup_script_s3_object_version:
     description: S3 object version of the startup script in use.
 
 runs:

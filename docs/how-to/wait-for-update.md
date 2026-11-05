@@ -27,7 +27,7 @@ The environment is `AVAILABLE` and the update this run submitted has `LastUpdate
 
 `ROLLING_BACK` and `CREATING_SNAPSHOT` keep polling. A rollback ends in `UPDATE_FAILED`, which fails the step.
 
-Outputs and the job summary are written on failure too, so a later step with `if: always()` can read `status` and `last-update-status`.
+Outputs and the job summary are written on failure too, so a later step with `if: always()` can read `status` and `last_update_status`.
 
 ## Choose a timeout
 

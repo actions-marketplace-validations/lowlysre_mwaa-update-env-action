@@ -73,11 +73,11 @@ Values the API validates itself, such as `environment-class` and `airflow-versio
 | Output | Description |
 | --- | --- |
 | `status` | Environment status when the action finished, for example `AVAILABLE` or `UPDATING`. |
-| `last-update-status` | `SUCCESS`, `PENDING`, or `FAILED`. |
-| `environment-arn` | Environment ARN. |
-| `airflow-version` | Airflow version in use. |
-| `requirements-s3-object-version` | `requirements.txt` version in use. |
-| `plugins-s3-object-version` | `plugins.zip` version in use. |
-| `startup-script-s3-object-version` | Startup script version in use. |
+| `last_update_status` | `SUCCESS`, `PENDING`, or `FAILED`. |
+| `arn` | Environment ARN. |
+| `airflow_version` | Airflow version in use. |
+| `requirements_s3_object_version` | `requirements.txt` version in use. |
+| `plugins_s3_object_version` | `plugins.zip` version in use. |
+| `startup_script_s3_object_version` | Startup script version in use. |
 
-Outputs reflect a fresh `GetEnvironment` call at the end of the run. Without `wait`, they usually show `UPDATING`. When a waited update fails, the outputs are still set before the step fails, so later steps with `if: always()` can read them.
+Outputs reflect a fresh `GetEnvironment` call at the end of the run. The names match the same fields in [mwaa-get-env-action](https://github.com/lowlysre/mwaa-get-env-action), so a workflow can read the environment before and after an update with one set of names. See the [recipes](../how-to/recipes.md). Without `wait`, they usually show `UPDATING`. When a waited update fails, the outputs are still set before the step fails, so later steps with `if: always()` can read them.

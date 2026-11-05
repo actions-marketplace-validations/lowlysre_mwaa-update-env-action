@@ -85,12 +85,12 @@ describe('run', () => {
     ])
     assert.deepEqual(readOutputs(), {
       status: 'UPDATING',
-      'last-update-status': 'PENDING',
-      'environment-arn': 'arn:aws:airflow:us-east-1:123456789012:environment/env1',
-      'airflow-version': '2.10.3',
-      'requirements-s3-object-version': 'rv1',
-      'plugins-s3-object-version': 'pv1',
-      'startup-script-s3-object-version': 'sv1'
+      last_update_status: 'PENDING',
+      arn: 'arn:aws:airflow:us-east-1:123456789012:environment/env1',
+      airflow_version: '2.10.3',
+      requirements_s3_object_version: 'rv1',
+      plugins_s3_object_version: 'pv1',
+      startup_script_s3_object_version: 'sv1'
     })
     const summary = readFileSync(summaryFile, 'utf8')
     assert.match(summary, /MWAA environment update: env1/)
@@ -110,14 +110,17 @@ describe('run', () => {
 
     const outputs = readOutputs()
     assert.equal(outputs.status, 'AVAILABLE')
-    assert.equal(outputs['last-update-status'], 'SUCCESS')
+    assert.equal(outputs['last_update_status'], 'SUCCESS')
     assert.equal(sent.length, 4)
   })
 
   it('refuses to update an environment that is not AVAILABLE', async () => {
     const { client, sent } = fakeClient([environment('UPDATING', 'PENDING', '2026-01-01')])
     await assert.rejects(run({ client }), /must be AVAILABLE/)
-    assert.deepEqual(sent.map(([name]) => name), ['GetEnvironmentCommand'])
+    assert.deepEqual(
+      sent.map(([name]) => name),
+      ['GetEnvironmentCommand']
+    )
   })
 
   it('still sets outputs and fails when the update fails', async () => {
@@ -129,7 +132,7 @@ describe('run', () => {
 
     const outputs = readOutputs()
     assert.equal(outputs.status, 'UPDATE_FAILED')
-    assert.equal(outputs['last-update-status'], 'FAILED')
+    assert.equal(outputs['last_update_status'], 'FAILED')
     assert.match(readFileSync(summaryFile, 'utf8'), /Failed/)
   })
 

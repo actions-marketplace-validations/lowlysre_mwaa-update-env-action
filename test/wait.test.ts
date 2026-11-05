@@ -11,10 +11,11 @@ const env = (
   updateStatus: string,
   createdAt: Date = NEW,
   error?: { ErrorCode: string; ErrorMessage: string }
-): Environment => ({
-  Status: status,
-  LastUpdate: { Status: updateStatus, CreatedAt: createdAt, Error: error }
-}) as Environment
+): Environment =>
+  ({
+    Status: status,
+    LastUpdate: { Status: updateStatus, CreatedAt: createdAt, Error: error }
+  }) as Environment
 
 function harness(responses: Environment[], timeoutSeconds = 3600) {
   let calls = 0
@@ -93,7 +94,10 @@ describe('waitForUpdate', () => {
       now: () => clock,
       onPoll: (e, elapsed) => seen.push([e.Status, elapsed])
     })
-    assert.deepEqual(seen, [['UPDATING', 0], ['AVAILABLE', 10]])
+    assert.deepEqual(seen, [
+      ['UPDATING', 0],
+      ['AVAILABLE', 10]
+    ])
   })
 
   it('treats a first-ever update (no previous timestamp) as ours', async () => {

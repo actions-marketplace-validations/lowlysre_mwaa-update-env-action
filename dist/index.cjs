@@ -48979,12 +48979,12 @@ var c5 = {
 };
 var OUTPUT_FIELDS = [
   ["status", (e5) => e5.Status],
-  ["last-update-status", (e5) => e5.LastUpdate?.Status],
-  ["environment-arn", (e5) => e5.Arn],
-  ["airflow-version", (e5) => e5.AirflowVersion],
-  ["requirements-s3-object-version", (e5) => e5.RequirementsS3ObjectVersion],
-  ["plugins-s3-object-version", (e5) => e5.PluginsS3ObjectVersion],
-  ["startup-script-s3-object-version", (e5) => e5.StartupScriptS3ObjectVersion]
+  ["last_update_status", (e5) => e5.LastUpdate?.Status],
+  ["arn", (e5) => e5.Arn],
+  ["airflow_version", (e5) => e5.AirflowVersion],
+  ["requirements_s3_object_version", (e5) => e5.RequirementsS3ObjectVersion],
+  ["plugins_s3_object_version", (e5) => e5.PluginsS3ObjectVersion],
+  ["startup_script_s3_object_version", (e5) => e5.StartupScriptS3ObjectVersion]
 ];
 function setOutputs(env2) {
   for (const [name, read] of OUTPUT_FIELDS) setOutput(name, read(env2) ?? "");
@@ -48996,10 +48996,19 @@ function statusIcon(status) {
 }
 async function writeSummary(name, requested, env2, outcome) {
   const settings = Object.entries(requested).filter(([key]) => key !== "Name").map(([key, value]) => [key, `<code>${typeof value === "object" ? JSON.stringify(value) : String(value)}</code>`]);
-  summary.addHeading(`MWAA environment update: ${name}`, 2).addRaw(`${statusIcon(env2?.Status)} ${outcome}`, true).addHeading("Requested changes", 3).addTable([[{ data: "Setting", header: true }, { data: "Value", header: true }], ...settings]);
+  summary.addHeading(`MWAA environment update: ${name}`, 2).addRaw(`${statusIcon(env2?.Status)} ${outcome}`, true).addHeading("Requested changes", 3).addTable([
+    [
+      { data: "Setting", header: true },
+      { data: "Value", header: true }
+    ],
+    ...settings
+  ]);
   if (env2) {
     summary.addHeading("Environment", 3).addTable([
-      [{ data: "Field", header: true }, { data: "Value", header: true }],
+      [
+        { data: "Field", header: true },
+        { data: "Value", header: true }
+      ],
       ["Status", `${statusIcon(env2.Status)} ${env2.Status ?? ""}`],
       ["Last update", `${statusIcon(env2.LastUpdate?.Status)} ${env2.LastUpdate?.Status ?? ""}`],
       ["Airflow version", env2.AirflowVersion ?? ""],
@@ -49021,7 +49030,8 @@ async function run(deps = {}) {
   };
   startGroup(c5.bold(`Requested changes for ${c5.cyan(name)}`));
   for (const [key, value] of Object.entries(inputs.request)) {
-    if (key !== "Name") info(`  ${c5.dim(key.padEnd(30))} ${typeof value === "object" ? JSON.stringify(value) : value}`);
+    if (key !== "Name")
+      info(`  ${c5.dim(key.padEnd(30))} ${typeof value === "object" ? JSON.stringify(value) : value}`);
   }
   endGroup();
   const before = await getEnvironment();
@@ -49043,7 +49053,9 @@ async function run(deps = {}) {
         sleep: deps.sleep,
         pollIntervalSeconds: inputs.pollIntervalSeconds,
         timeoutSeconds: inputs.timeoutSeconds,
-        onPoll: (env2, elapsed) => info(`${statusIcon(env2.Status)} ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(update: ${env2.LastUpdate?.Status ?? "n/a"}, ${elapsed}s)`)}`)
+        onPoll: (env2, elapsed) => info(
+          `${statusIcon(env2.Status)} ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(update: ${env2.LastUpdate?.Status ?? "n/a"}, ${elapsed}s)`)}`
+        )
       });
     } catch (error3) {
       endGroup();

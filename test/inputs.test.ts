@@ -86,7 +86,12 @@ describe('parseInputs', () => {
 
   it('reads wait, region and polling settings', () => {
     const inputs = parse({
-      name: 'e', schedulers: '2', wait: 'TRUE', region: 'us-west-2', 'poll-interval': '5', timeout: '60'
+      name: 'e',
+      schedulers: '2',
+      wait: 'TRUE',
+      region: 'us-west-2',
+      'poll-interval': '5',
+      timeout: '60'
     })
     assert.equal(inputs.wait, true)
     assert.equal(inputs.pollIntervalSeconds, 5)

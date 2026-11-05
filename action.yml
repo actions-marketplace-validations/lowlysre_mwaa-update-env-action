@@ -1,5 +1,5 @@
 name: MWAA Update Environment
-description: Update an Amazon MWAA environment (aws mwaa update-environment) using plain AWS credentials, optionally waiting until it is AVAILABLE again.
+description: Update an Amazon MWAA environment with plain AWS credentials.
 author: lowlysre
 branding:
   icon: refresh-cw

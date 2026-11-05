@@ -48822,6 +48822,44 @@ function endGroup() {
 // src/main.ts
 var import_client_mwaa = __toESM(require_dist_cjs16(), 1);
 
+// src/format.ts
+var ANSI = { ok: "32", busy: "94", warn: "33", fail: "31", idle: "90" };
+var SUMMARY_DOT = { ok: "\u{1F7E2}", busy: "\u{1F535}", warn: "\u{1F7E1}", fail: "\u{1F534}", idle: "\u26AA" };
+var paint = (code, text) => `\x1B[${code}m${text}\x1B[0m`;
+var dim = (text) => paint("2", text);
+function toneOf(status) {
+  switch (status) {
+    case "AVAILABLE":
+    case "SUCCESS":
+      return "ok";
+    case "ROLLING_BACK":
+    case "MAINTENANCE":
+      return "warn";
+    case "FAILED":
+    case "UPDATE_FAILED":
+    case "CREATE_FAILED":
+    case "UNAVAILABLE":
+    case "DELETED":
+      return "fail";
+    case void 0:
+    case "":
+      return "idle";
+    default:
+      return "busy";
+  }
+}
+function logStatus(status, tone = toneOf(status)) {
+  return paint(ANSI[tone], `\u25CF ${status ?? "unknown"}`);
+}
+function summaryStatus(status, tone = toneOf(status)) {
+  return `${SUMMARY_DOT[tone]} ${status ?? ""}`.trimEnd();
+}
+function pollLine(status, updateStatus, elapsedSeconds, isOurs) {
+  if (!isOurs)
+    return `${logStatus(status, "idle")} ${dim(`(waiting for MWAA to start the update, ${elapsedSeconds}s)`)}`;
+  return `${logStatus(status)} ${dim(`(update: ${updateStatus ?? "n/a"}, ${elapsedSeconds}s)`)}`;
+}
+
 // src/inputs.ts
 var STRINGS = {
   "airflow-version": "AirflowVersion",
@@ -48970,12 +49008,10 @@ async function waitForUpdate(options) {
 
 // src/main.ts
 var c5 = {
-  green: (s2) => `\x1B[32m${s2}\x1B[0m`,
-  red: (s2) => `\x1B[31m${s2}\x1B[0m`,
-  yellow: (s2) => `\x1B[33m${s2}\x1B[0m`,
-  cyan: (s2) => `\x1B[36m${s2}\x1B[0m`,
-  dim: (s2) => `\x1B[2m${s2}\x1B[0m`,
-  bold: (s2) => `\x1B[1m${s2}\x1B[0m`
+  green: (s2) => paint("32", s2),
+  cyan: (s2) => paint("36", s2),
+  bold: (s2) => paint("1", s2),
+  dim
 };
 var OUTPUT_FIELDS = [
   ["status", (e5) => e5.Status],
@@ -48989,14 +49025,9 @@ var OUTPUT_FIELDS = [
 function setOutputs(env2) {
   for (const [name, read] of OUTPUT_FIELDS) setOutput(name, read(env2) ?? "");
 }
-function statusIcon(status) {
-  if (status === "AVAILABLE" || status === "SUCCESS") return "\u2705";
-  if (status === "FAILED" || status?.endsWith("FAILED") || status === "UNAVAILABLE") return "\u274C";
-  return "\u23F3";
-}
-async function writeSummary(name, requested, env2, outcome) {
+async function writeSummary(name, requested, env2, outcome, outcomeTone) {
   const settings = Object.entries(requested).filter(([key]) => key !== "Name").map(([key, value]) => [key, `<code>${typeof value === "object" ? JSON.stringify(value) : String(value)}</code>`]);
-  summary.addHeading(`MWAA environment update: ${name}`, 2).addRaw(`${statusIcon(env2?.Status)} ${outcome}`, true).addHeading("Requested changes", 3).addTable([
+  summary.addHeading(`MWAA environment update: ${name}`, 2).addRaw(`${summaryStatus(void 0, outcomeTone)} ${outcome}`, true).addHeading("Requested changes", 3).addTable([
     [
       { data: "Setting", header: true },
       { data: "Value", header: true }
@@ -49009,8 +49040,8 @@ async function writeSummary(name, requested, env2, outcome) {
         { data: "Field", header: true },
         { data: "Value", header: true }
       ],
-      ["Status", `${statusIcon(env2.Status)} ${env2.Status ?? ""}`],
-      ["Last update", `${statusIcon(env2.LastUpdate?.Status)} ${env2.LastUpdate?.Status ?? ""}`],
+      ["Status", summaryStatus(env2.Status)],
+      ["Last update", summaryStatus(env2.LastUpdate?.Status)],
       ["Airflow version", env2.AirflowVersion ?? ""],
       ["requirements.txt version", env2.RequirementsS3ObjectVersion ?? ""],
       ["plugins.zip version", env2.PluginsS3ObjectVersion ?? ""],
@@ -49035,12 +49066,12 @@ async function run(deps = {}) {
   }
   endGroup();
   const before = await getEnvironment();
-  info(`Current status: ${c5.cyan(before.Status ?? "unknown")}`);
+  info(`Current status: ${logStatus(before.Status)}`);
   if (before.Status !== "AVAILABLE") {
     throw new Error(`Environment is ${before.Status}; it must be AVAILABLE before it can be updated.`);
   }
   const previousUpdateAt = before.LastUpdate?.CreatedAt?.getTime();
-  info(`\u{1F680} Submitting update to ${c5.cyan(name)}...`);
+  info(`Submitting update to ${c5.cyan(name)}...`);
   await client.send(new import_client_mwaa.UpdateEnvironmentCommand(inputs.request));
   info(c5.green("Update accepted by MWAA."));
   let final;
@@ -49053,21 +49084,19 @@ async function run(deps = {}) {
         sleep: deps.sleep,
         pollIntervalSeconds: inputs.pollIntervalSeconds,
         timeoutSeconds: inputs.timeoutSeconds,
-        onPoll: (env2, elapsed, isOurs) => info(
-          isOurs ? `${statusIcon(env2.Status)} ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(update: ${env2.LastUpdate?.Status ?? "n/a"}, ${elapsed}s)`)}` : `\u23F3 ${c5.yellow(env2.Status ?? "?")} ${c5.dim(`(waiting for MWAA to start the update, ${elapsed}s)`)}`
-        )
+        onPoll: (env2, elapsed, isOurs) => info(pollLine(env2.Status, env2.LastUpdate?.Status, elapsed, isOurs))
       });
     } catch (error3) {
       endGroup();
       const latest = await getEnvironment().catch(() => void 0);
       if (latest) setOutputs(latest);
       if (error3 instanceof UpdateFailedError || error3 instanceof WaitTimeoutError) {
-        await writeSummary(name, inputs.request, latest, `**Failed:** ${error3.message}`);
+        await writeSummary(name, inputs.request, latest, `**Failed:** ${error3.message}`, "fail");
       }
       throw error3;
     }
     endGroup();
-    info(c5.green(`\u2705 ${name} is AVAILABLE and the update succeeded.`));
+    info(c5.green(`\u25CF ${name} is AVAILABLE and the update succeeded.`));
   } else {
     final = await getEnvironment();
     info(c5.dim("Not waiting (wait: false); the environment will keep updating in the background."));
@@ -49077,7 +49106,8 @@ async function run(deps = {}) {
     name,
     inputs.request,
     final,
-    inputs.wait ? "Update completed successfully." : "Update submitted; not waiting for completion."
+    inputs.wait ? "Update completed successfully." : "Update submitted; not waiting for completion.",
+    inputs.wait ? "ok" : "busy"
   );
 }
 

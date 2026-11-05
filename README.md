@@ -57,7 +57,7 @@ With `wait: true`, the step succeeds once the environment is `AVAILABLE` and the
 
 ## Features
 
-Each run logs the requested changes, streams status while it waits, and writes a job summary with the final environment state.
+Each run logs the requested changes, prints a color-coded status dot on every poll while it waits (green done, blue in progress, yellow rolling back, red failed), and writes a job summary with the final environment state.
 
 | Feature | Behavior |
 | --- | --- |

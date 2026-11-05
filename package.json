@@ -11,9 +11,8 @@
   "scripts": {
     "build": "node scripts/build.js",
     "typecheck": "tsc --noEmit",
-    "lint:docs": "node scripts/check-docs.mjs",
     "test": "node --test --experimental-test-coverage --test-coverage-lines=100 --test-coverage-branches=90 --test-coverage-functions=95 \"test/**/*.test.ts\"",
-    "check": "npm run typecheck && npm run lint:docs && npm test"
+    "check": "npm run typecheck && npm test"
   },
   "dependencies": {
     "@actions/core": "^3.0.1",

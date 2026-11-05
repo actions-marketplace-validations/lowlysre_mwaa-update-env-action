@@ -14,7 +14,7 @@ TYPESCRIPT_DEFAULT_STYLE: prettier
 FILTER_REGEX_EXCLUDE: (dist/|node_modules/|package-lock\.json|docs/public/)
 
 # The egress policy blocks everything except the endpoints listed in the workflow, so linters
-# that download data at run time (vulnerability databases, schema catalogs, link checks) stay
+# that download data at run time (vulnerability databases, schema catalogs) stay
 # off. zizmor runs as its own CI job.
 DISABLE_LINTERS:
   - ACTION_ZIZMOR
@@ -27,6 +27,5 @@ DISABLE_LINTERS:
   - REPOSITORY_OSV_SCANNER
   - REPOSITORY_CHECKOV
   - COPYPASTE_JSCPD
-  - SPELL_LYCHEE
   - JSON_V8R
   - YAML_V8R

@@ -1,4 +1,0 @@
-# Network-free link checking: harden-runner blocks outbound traffic, so lychee only checks
-# local files and their #anchors.
-offline = true
-include_fragments = "full"

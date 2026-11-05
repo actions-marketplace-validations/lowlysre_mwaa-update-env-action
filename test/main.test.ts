@@ -123,17 +123,55 @@ describe('run', () => {
     )
   })
 
-  it('still sets outputs and fails when the update fails', async () => {
+  it('reports the failed environment without fetching it again', async () => {
     setInputs({ wait: 'true' })
     const failed = environment('UPDATE_FAILED', 'FAILED', '2026-01-02')
-    const { client } = fakeClient([environment('AVAILABLE', 'SUCCESS', '2026-01-01'), { Arn: 'x' }, failed])
+    const { client, sent } = fakeClient([environment('AVAILABLE', 'SUCCESS', '2026-01-01'), { Arn: 'x' }, failed])
 
     await assert.rejects(run({ client, sleep: async () => {} }), /UPDATE_FAILED/)
 
+    assert.equal(sent.length, 3)
     const outputs = readOutputs()
     assert.equal(outputs.status, 'UPDATE_FAILED')
     assert.equal(outputs['last-update-status'], 'FAILED')
-    assert.match(readFileSync(summaryFile, 'utf8'), /Failed/)
+    assert.match(readFileSync(summaryFile, 'utf8'), /🔴 \*\*Failed:\*\* Environment entered UPDATE_FAILED/)
+  })
+
+  it('sets outputs and a failed summary when the wait times out', async () => {
+    setInputs({ wait: 'true', 'poll-interval': '30', timeout: '60' })
+    const { client } = fakeClient([
+      environment('AVAILABLE', 'SUCCESS', '2026-01-01'),
+      { Arn: 'x' },
+      environment('UPDATING', 'PENDING', '2026-01-02')
+    ])
+    let clock = 0
+    await assert.rejects(
+      run({
+        client,
+        now: () => clock,
+        sleep: async (ms) => {
+          clock += ms
+        }
+      }),
+      /Timed out/
+    )
+    assert.equal(readOutputs().status, 'UPDATING')
+    assert.match(readFileSync(summaryFile, 'utf8'), /Timed out/)
+  })
+
+  it('escapes requested values in the job summary', async () => {
+    setInputs({ 'airflow-configuration-options': '{"webserver.navbar_color":"<b>red</b>"}' })
+    const { client } = fakeClient([
+      environment('AVAILABLE', 'SUCCESS', '2026-01-01'),
+      { Arn: 'x' },
+      environment('UPDATING', 'PENDING', '2026-01-02')
+    ])
+
+    await run({ client })
+
+    const summary = readFileSync(summaryFile, 'utf8')
+    assert.match(summary, /&lt;b&gt;red&lt;\/b&gt;/)
+    assert.doesNotMatch(summary, /<b>red<\/b>/)
   })
 
   it('fails on invalid inputs before calling AWS', async () => {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { logStatus, pollLine, summaryStatus, toneOf } from '../src/format.ts'
+import { formatValue, logStatus, pollLine, summaryDot, summaryStatus, toneOf } from '../src/format.ts'
 
 const ESC = '\u001b'
 
@@ -43,7 +43,8 @@ describe('summaryStatus', () => {
     assert.equal(summaryStatus('UPDATING'), '🔵 UPDATING')
     assert.equal(summaryStatus('ROLLING_BACK'), '🟡 ROLLING_BACK')
     assert.equal(summaryStatus('FAILED'), '🔴 FAILED')
-    assert.equal(summaryStatus(undefined, 'ok'), '🟢')
+    assert.equal(summaryStatus(undefined), '⚪')
+    assert.equal(summaryDot('ok'), '🟢')
   })
 })
 
@@ -62,5 +63,13 @@ describe('pollLine', () => {
 
   it('handles a missing update status', () => {
     assert.match(pollLine('UPDATING', undefined, 5, true), /update: n\/a, 5s/)
+  })
+})
+
+describe('formatValue', () => {
+  it('prints scalars as-is and objects as JSON', () => {
+    assert.equal(formatValue('mw1.small'), 'mw1.small')
+    assert.equal(formatValue(3), '3')
+    assert.equal(formatValue({ 'core.x': 'y' }), '{"core.x":"y"}')
   })
 })

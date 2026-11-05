@@ -6,17 +6,22 @@ import {
   type Environment,
   type UpdateEnvironmentCommandInput
 } from '@aws-sdk/client-mwaa'
-import { dim, logStatus, paint, pollLine, summaryStatus, type Tone } from './format.ts'
-import { parseInputs } from './inputs.ts'
-import { UpdateFailedError, WaitTimeoutError, waitForUpdate } from './wait.ts'
+import {
+  bold,
+  cyan,
+  dim,
+  formatValue,
+  green,
+  logStatus,
+  pollLine,
+  summaryDot,
+  summaryStatus,
+  type Tone
+} from './format.ts'
+import { parseInputs, type ActionInputs } from './inputs.ts'
+import { WaitError, waitForUpdate } from './wait.ts'
 
-const c = {
-  green: (s: string) => paint('32', s),
-  cyan: (s: string) => paint('36', s),
-  bold: (s: string) => paint('1', s),
-  dim
-}
-const OUTPUT_FIELDS: Array<[string, (env: Environment) => string | undefined]> = [
+const OUTPUTS: Array<[name: string, read: (env: Environment) => string | undefined]> = [
   ['status', (e) => e.Status],
   ['last-update-status', (e) => e.LastUpdate?.Status],
   ['environment-arn', (e) => e.Arn],
@@ -26,39 +31,33 @@ const OUTPUT_FIELDS: Array<[string, (env: Environment) => string | undefined]> =
   ['startup-script-s3-object-version', (e) => e.StartupScriptS3ObjectVersion]
 ]
 
-function setOutputs(env: Environment): void {
-  for (const [name, read] of OUTPUT_FIELDS) core.setOutput(name, read(env) ?? '')
-}
+const escapeHtml = (text: string): string =>
+  text.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!)
 
-async function writeSummary(
-  name: string,
-  requested: UpdateEnvironmentCommandInput,
-  env: Environment | undefined,
-  outcome: string,
-  outcomeTone: Tone
-): Promise<void> {
-  const settings = Object.entries(requested)
-    .filter(([key]) => key !== 'Name')
-    .map(([key, value]) => [key, `<code>${typeof value === 'object' ? JSON.stringify(value) : String(value)}</code>`])
+const requestedChanges = (request: UpdateEnvironmentCommandInput): Array<[string, unknown]> =>
+  Object.entries(request).filter(([field]) => field !== 'Name')
 
-  core.summary
-    .addHeading(`MWAA environment update: ${name}`, 2)
-    .addRaw(`${summaryStatus(undefined, outcomeTone)} ${outcome}`, true)
+async function finish(inputs: ActionInputs, env: Environment, outcome: string, tone: Tone): Promise<void> {
+  for (const [name, read] of OUTPUTS) core.setOutput(name, read(env) ?? '')
+
+  const header = (a: string, b: string) => [
+    { data: a, header: true },
+    { data: b, header: true }
+  ]
+  await core.summary
+    .addHeading(`MWAA environment update: ${escapeHtml(inputs.name)}`, 2)
+    .addRaw(`${summaryDot(tone)} ${outcome}`, true)
     .addHeading('Requested changes', 3)
     .addTable([
-      [
-        { data: 'Setting', header: true },
-        { data: 'Value', header: true }
-      ],
-      ...settings
+      header('Setting', 'Value'),
+      ...requestedChanges(inputs.request).map(([field, value]) => [
+        field,
+        `<code>${escapeHtml(formatValue(value))}</code>`
+      ])
     ])
-
-  if (env) {
-    core.summary.addHeading('Environment', 3).addTable([
-      [
-        { data: 'Field', header: true },
-        { data: 'Value', header: true }
-      ],
+    .addHeading('Environment', 3)
+    .addTable([
+      header('Field', 'Value'),
       ['Status', summaryStatus(env.Status)],
       ['Last update', summaryStatus(env.LastUpdate?.Status)],
       ['Airflow version', env.AirflowVersion ?? ''],
@@ -66,18 +65,18 @@ async function writeSummary(
       ['plugins.zip version', env.PluginsS3ObjectVersion ?? ''],
       ['startup script version', env.StartupScriptS3ObjectVersion ?? '']
     ])
-  }
-  await core.summary.write()
+    .write()
 }
 
 export interface RunDependencies {
   client?: Pick<MWAAClient, 'send'>
   sleep?: (ms: number) => Promise<void>
+  now?: () => number
 }
 
 export async function run(deps: RunDependencies = {}): Promise<void> {
-  const inputs = parseInputs((name) => core.getInput(name))
-  const name = inputs.request.Name as string
+  const inputs = parseInputs((input) => core.getInput(input))
+  const { name } = inputs
   const client = deps.client ?? new MWAAClient(inputs.region ? { region: inputs.region } : {})
   const getEnvironment = async (): Promise<Environment> => {
     const { Environment: env } = await client.send(new GetEnvironmentCommand({ Name: name }))
@@ -85,10 +84,9 @@ export async function run(deps: RunDependencies = {}): Promise<void> {
     return env
   }
 
-  core.startGroup(c.bold(`Requested changes for ${c.cyan(name)}`))
-  for (const [key, value] of Object.entries(inputs.request)) {
-    if (key !== 'Name')
-      core.info(`  ${c.dim(key.padEnd(30))} ${typeof value === 'object' ? JSON.stringify(value) : value}`)
+  core.startGroup(bold(`Requested changes for ${cyan(name)}`))
+  for (const [field, value] of requestedChanges(inputs.request)) {
+    core.info(`  ${dim(field.padEnd(30))} ${formatValue(value)}`)
   }
   core.endGroup()
 
@@ -97,47 +95,37 @@ export async function run(deps: RunDependencies = {}): Promise<void> {
   if (before.Status !== 'AVAILABLE') {
     throw new Error(`Environment is ${before.Status}; it must be AVAILABLE before it can be updated.`)
   }
-  const previousUpdateAt = before.LastUpdate?.CreatedAt?.getTime()
 
-  core.info(`Submitting update to ${c.cyan(name)}...`)
+  core.info(`Submitting update to ${cyan(name)}...`)
   await client.send(new UpdateEnvironmentCommand(inputs.request))
-  core.info(c.green('Update accepted by MWAA.'))
+  core.info(green('Update accepted by MWAA.'))
 
-  let final: Environment
-  if (inputs.wait) {
-    core.startGroup(c.bold(`Waiting for ${name} to become AVAILABLE`))
-    try {
-      final = await waitForUpdate({
-        fetch: getEnvironment,
-        previousUpdateAt,
-        sleep: deps.sleep,
-        pollIntervalSeconds: inputs.pollIntervalSeconds,
-        timeoutSeconds: inputs.timeoutSeconds,
-        onPoll: (env, elapsed, isOurs) => core.info(pollLine(env.Status, env.LastUpdate?.Status, elapsed, isOurs))
-      })
-    } catch (error) {
-      core.endGroup()
-      // Still publish whatever state we can see before failing the step.
-      const latest = await getEnvironment().catch(() => undefined)
-      if (latest) setOutputs(latest)
-      if (error instanceof UpdateFailedError || error instanceof WaitTimeoutError) {
-        await writeSummary(name, inputs.request, latest, `**Failed:** ${error.message}`, 'fail')
-      }
-      throw error
-    }
-    core.endGroup()
-    core.info(c.green(`● ${name} is AVAILABLE and the update succeeded.`))
-  } else {
-    final = await getEnvironment()
-    core.info(c.dim('Not waiting (wait: false); the environment will keep updating in the background.'))
+  if (!inputs.wait) {
+    core.info(dim('Not waiting (wait: false); the environment will keep updating in the background.'))
+    return finish(inputs, await getEnvironment(), 'Update submitted; not waiting for completion.', 'busy')
   }
 
-  setOutputs(final)
-  await writeSummary(
-    name,
-    inputs.request,
-    final,
-    inputs.wait ? 'Update completed successfully.' : 'Update submitted; not waiting for completion.',
-    inputs.wait ? 'ok' : 'busy'
-  )
+  core.startGroup(bold(`Waiting for ${name} to become AVAILABLE`))
+  let env: Environment
+  try {
+    env = await waitForUpdate({
+      fetch: getEnvironment,
+      previousUpdateAt: before.LastUpdate?.CreatedAt?.getTime(),
+      pollIntervalSeconds: inputs.pollIntervalSeconds,
+      timeoutSeconds: inputs.timeoutSeconds,
+      sleep: deps.sleep,
+      now: deps.now,
+      onPoll: (e, elapsed, isOurs) => core.info(pollLine(e.Status, e.LastUpdate?.Status, elapsed, isOurs))
+    })
+  } catch (error) {
+    if (error instanceof WaitError) {
+      await finish(inputs, error.environment, `**Failed:** ${escapeHtml(error.message)}`, 'fail')
+    }
+    throw error
+  } finally {
+    core.endGroup()
+  }
+
+  core.info(green(`● ${name} is AVAILABLE and the update succeeded.`))
+  await finish(inputs, env, 'Update completed successfully.', 'ok')
 }

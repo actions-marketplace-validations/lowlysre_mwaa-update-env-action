@@ -1330,8 +1330,8 @@ var require_util = __commonJS({
     function isUSVString(val) {
       return hasIsWellFormed ? `${val}`.isWellFormed() : toUSVString(val) === `${val}`;
     }
-    function isTokenCharCode(c6) {
-      switch (c6) {
+    function isTokenCharCode(c5) {
+      switch (c5) {
         case 34:
         case 40:
         case 41:
@@ -1351,7 +1351,7 @@ var require_util = __commonJS({
         case 125:
           return false;
         default:
-          return c6 >= 33 && c6 <= 126;
+          return c5 >= 33 && c5 <= 126;
       }
     }
     function isValidHTTPToken(characters) {
@@ -3011,7 +3011,7 @@ var require_constants2 = __commonJS({
         exports2.HEADER_CHARS.push(i5);
       }
     }
-    exports2.CONNECTION_TOKEN_CHARS = exports2.HEADER_CHARS.filter((c6) => c6 !== 44);
+    exports2.CONNECTION_TOKEN_CHARS = exports2.HEADER_CHARS.filter((c5) => c5 !== 44);
     exports2.MAJOR = exports2.NUM_MAP;
     exports2.MINOR = exports2.MAJOR;
     var HEADER_STATE;
@@ -4150,10 +4150,10 @@ var require_util2 = __commonJS({
     }
     function isValidReasonPhrase(statusText) {
       for (let i5 = 0; i5 < statusText.length; ++i5) {
-        const c6 = statusText.charCodeAt(i5);
-        if (!(c6 === 9 || // HTAB
-        c6 >= 32 && c6 <= 126 || // SP / VCHAR
-        c6 >= 128 && c6 <= 255)) {
+        const c5 = statusText.charCodeAt(i5);
+        if (!(c5 === 9 || // HTAB
+        c5 >= 32 && c5 <= 126 || // SP / VCHAR
+        c5 >= 128 && c5 <= 255)) {
           return false;
         }
       }
@@ -8258,7 +8258,7 @@ var require_pool_base = __commonJS({
             pool.emit("drain", origin, [pool, ...targets]);
           }
           if (pool[kClosedResolve] && queue.isEmpty()) {
-            Promise.all(pool[kClients].map((c6) => c6.close())).then(pool[kClosedResolve]);
+            Promise.all(pool[kClients].map((c5) => c5.close())).then(pool[kClosedResolve]);
           }
         };
         this[kOnConnect] = (origin, targets) => {
@@ -8307,7 +8307,7 @@ var require_pool_base = __commonJS({
       }
       async [kClose]() {
         if (this[kQueue].isEmpty()) {
-          await Promise.all(this[kClients].map((c6) => c6.close()));
+          await Promise.all(this[kClients].map((c5) => c5.close()));
         } else {
           await new Promise((resolve) => {
             this[kClosedResolve] = resolve;
@@ -8322,7 +8322,7 @@ var require_pool_base = __commonJS({
           }
           item.handler.onError(err);
         }
-        await Promise.all(this[kClients].map((c6) => c6.destroy(err)));
+        await Promise.all(this[kClients].map((c5) => c5.destroy(err)));
       }
       [kDispatch](opts, handler) {
         const dispatcher = this[kGetDispatcher]();
@@ -15102,8 +15102,8 @@ var require_util4 = __commonJS({
       return new TextDecoder(encoding).decode(sliced);
     }
     function BOMSniffing(ioQueue) {
-      const [a5, b5, c6] = ioQueue;
-      if (a5 === 239 && b5 === 187 && c6 === 191) {
+      const [a5, b5, c5] = ioQueue;
+      if (a5 === 239 && b5 === 187 && c5 === 191) {
         return "UTF-8";
       } else if (a5 === 254 && b5 === 255) {
         return "UTF-16BE";
@@ -24662,7 +24662,7 @@ var init_substring = __esm({
 var uriEncode;
 var init_uriEncode = __esm({
   "node_modules/@smithy/core/dist-es/submodules/endpoints/util-endpoints/lib/uriEncode.js"() {
-    uriEncode = (value) => encodeURIComponent(value).replace(/[!*'()]/g, (c6) => `%${c6.charCodeAt(0).toString(16).toUpperCase()}`);
+    uriEncode = (value) => encodeURIComponent(value).replace(/[!*'()]/g, (c5) => `%${c5.charCodeAt(0).toString(16).toUpperCase()}`);
   }
 });
 
@@ -25392,8 +25392,8 @@ var chars, alphabetByEncoding, alphabetByValue, bitsPerLetter, bitsPerByte, maxL
 var init_constants_for_browser = __esm({
   "node_modules/@smithy/core/dist-es/submodules/serde/util-base64/constants-for-browser.js"() {
     chars = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/`;
-    alphabetByEncoding = Object.entries(chars).reduce((acc, [i5, c6]) => {
-      acc[c6] = Number(i5);
+    alphabetByEncoding = Object.entries(chars).reduce((acc, [i5, c5]) => {
+      acc[c5] = Number(i5);
       return acc;
     }, {});
     alphabetByValue = chars.split("");
@@ -26283,8 +26283,8 @@ var init_collect_stream_body = __esm({
 
 // node_modules/@smithy/core/dist-es/submodules/protocols/extended-encode-uri-component.js
 function extendedEncodeURIComponent(str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, function(c6) {
-    return "%" + c6.charCodeAt(0).toString(16).toUpperCase();
+  return encodeURIComponent(str).replace(/[!'()*]/g, function(c5) {
+    return "%" + c5.charCodeAt(0).toString(16).toUpperCase();
   });
 }
 var init_extended_encode_uri_component = __esm({
@@ -26418,26 +26418,26 @@ var init_readableStreamHasher = __esm({
 
 // node_modules/@smithy/core/dist-es/submodules/checksum/md5/Md5Js.js
 function compress(state2, block) {
-  let a5 = state2[0], b5 = state2[1], c6 = state2[2], d5 = state2[3];
+  let a5 = state2[0], b5 = state2[1], c5 = state2[2], d5 = state2[3];
   for (let i5 = 0; i5 < 64; ++i5) {
     let f5, g5;
     if (i5 < 16) {
-      f5 = b5 & c6 | ~b5 & d5;
+      f5 = b5 & c5 | ~b5 & d5;
       g5 = i5;
     } else if (i5 < 32) {
-      f5 = d5 & b5 | c6 & ~d5;
+      f5 = d5 & b5 | c5 & ~d5;
       g5 = (5 * i5 + 1) % 16;
     } else if (i5 < 48) {
-      f5 = b5 ^ c6 ^ d5;
+      f5 = b5 ^ c5 ^ d5;
       g5 = (3 * i5 + 5) % 16;
     } else {
-      f5 = c6 ^ (b5 | ~d5);
+      f5 = c5 ^ (b5 | ~d5);
       g5 = 7 * i5 % 16;
     }
     const x = block.getUint32(g5 * 4, true);
     const tmp = d5;
-    d5 = c6;
-    c6 = b5;
+    d5 = c5;
+    c5 = b5;
     const s2 = S[(i5 >> 4) * 4 + (i5 & 3)];
     const sum = (a5 + f5 & M) + (x + T[i5] & M) & M;
     b5 = b5 + ((sum << s2 | sum >>> 32 - s2) >>> 0) & M;
@@ -26445,7 +26445,7 @@ function compress(state2, block) {
   }
   state2[0] = state2[0] + a5 & M;
   state2[1] = state2[1] + b5 & M;
-  state2[2] = state2[2] + c6 & M;
+  state2[2] = state2[2] + c5 & M;
   state2[3] = state2[3] + d5 & M;
 }
 var Md5Js, INIT, M, S, T;
@@ -26553,11 +26553,11 @@ var init_Crc32Js = __esm({
   "node_modules/@smithy/core/dist-es/submodules/checksum/crc32/Crc32Js.js"() {
     CRC32_TABLE = new Uint32Array(256);
     for (let i5 = 0; i5 < 256; ++i5) {
-      let c6 = i5;
+      let c5 = i5;
       for (let j5 = 0; j5 < 8; ++j5) {
-        c6 = c6 & 1 ? 3988292384 ^ c6 >>> 1 : c6 >>> 1;
+        c5 = c5 & 1 ? 3988292384 ^ c5 >>> 1 : c5 >>> 1;
       }
-      CRC32_TABLE[i5] = c6 >>> 0;
+      CRC32_TABLE[i5] = c5 >>> 0;
     }
     ONES = 4294967295;
     Crc32Js = class {
@@ -29211,7 +29211,7 @@ var escapeUri, hexEncode;
 var init_escape_uri = __esm({
   "node_modules/@smithy/core/dist-es/submodules/protocols/util-uri-escape/escape-uri.js"() {
     escapeUri = (uri) => encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
-    hexEncode = (c6) => `%${c6.charCodeAt(0).toString(16).toUpperCase()}`;
+    hexEncode = (c5) => `%${c5.charCodeAt(0).toString(16).toUpperCase()}`;
   }
 });
 
@@ -30051,11 +30051,11 @@ var init_JsonShapeSerializer2 = __esm({
         this.ensure(z * 3 + 2);
         this.json[this.i++] = QUOTE;
         for (let j5 = 0; j5 < z; ++j5) {
-          const c6 = s2.charCodeAt(j5);
-          if (c6 > 34 && c6 < 92) {
-            this.json[this.i++] = c6;
-          } else if (c6 < 128) {
-            const esc = ESCAPE_TABLE[c6];
+          const c5 = s2.charCodeAt(j5);
+          if (c5 > 34 && c5 < 92) {
+            this.json[this.i++] = c5;
+          } else if (c5 < 128) {
+            const esc = ESCAPE_TABLE[c5];
             if (esc !== null) {
               this.ensure(esc.length + 1 + (z - j5 - 1) * 3 + 1);
               this.json[this.i++] = BACKSLASH;
@@ -30063,9 +30063,9 @@ var init_JsonShapeSerializer2 = __esm({
                 this.json[this.i++] = esc.charCodeAt(k5);
               }
             } else {
-              this.json[this.i++] = c6;
+              this.json[this.i++] = c5;
             }
-          } else if (c6 >= 55296 && c6 <= 56319) {
+          } else if (c5 >= 55296 && c5 <= 56319) {
             const next = j5 + 1 < z ? s2.charCodeAt(j5 + 1) : 0;
             if (next >= 56320 && next <= 57343) {
               this.ensure(4);
@@ -30074,20 +30074,20 @@ var init_JsonShapeSerializer2 = __esm({
               ++j5;
             } else {
               this.ensure(6 + (z - j5 - 1) * 3 + 1);
-              this.writeUnicodeEscape(c6);
+              this.writeUnicodeEscape(c5);
             }
-          } else if (c6 >= 56320 && c6 <= 57343) {
+          } else if (c5 >= 56320 && c5 <= 57343) {
             this.ensure(6 + (z - j5 - 1) * 3 + 1);
-            this.writeUnicodeEscape(c6);
+            this.writeUnicodeEscape(c5);
           } else {
             let { i: i5, json } = this;
-            if (c6 < 2048) {
-              json[i5++] = 192 | c6 >> 6;
-              json[i5++] = 128 | c6 & 63;
+            if (c5 < 2048) {
+              json[i5++] = 192 | c5 >> 6;
+              json[i5++] = 128 | c5 & 63;
             } else {
-              json[i5++] = 224 | c6 >> 12;
-              json[i5++] = 128 | c6 >> 6 & 63;
-              json[i5++] = 128 | c6 & 63;
+              json[i5++] = 224 | c5 >> 12;
+              json[i5++] = 128 | c5 >> 6 & 63;
+              json[i5++] = 128 | c5 & 63;
             }
             this.i = i5;
           }
@@ -30125,11 +30125,11 @@ var init_JsonShapeSerializer2 = __esm({
         for (let j5 = 0; j5 < mainLen; j5 += 3) {
           const a5 = data[j5];
           const b5 = data[j5 + 1];
-          const c6 = data[j5 + 2];
+          const c5 = data[j5 + 2];
           json[i5++] = B64[a5 >> 2];
           json[i5++] = B64[(a5 & 3) << 4 | b5 >> 4];
-          json[i5++] = B64[(b5 & 15) << 2 | c6 >> 6];
-          json[i5++] = B64[c6 & 63];
+          json[i5++] = B64[(b5 & 15) << 2 | c5 >> 6];
+          json[i5++] = B64[c5 & 63];
         }
         if (remainder === 2) {
           const a5 = data[mainLen];
@@ -40691,7 +40691,7 @@ var require_dist_cjs7 = __commonJS({
             xmlText += ` ${attributeName}="${escapeAttribute("" + attribute)}"`;
           }
         }
-        return xmlText += !hasChildren ? "/>" : `>${this.children.map((c6) => c6.toString()).join("")}</${this.name}>`;
+        return xmlText += !hasChildren ? "/>" : `>${this.children.map((c5) => c5.toString()).join("")}</${this.name}>`;
       }
     };
     function writeKey3(obj) {
@@ -40835,11 +40835,11 @@ var require_dist_cjs7 = __commonJS({
               childTags.push(p3.parseTag());
             }
           } else {
-            let text = "";
+            let text2 = "";
             while (p3.i < p3.z && p3.x[p3.i] !== "<") {
-              text += p3.x[p3.i++];
+              text2 += p3.x[p3.i++];
             }
-            textParts.push(p3.decodeEntities(text));
+            textParts.push(p3.decodeEntities(text2));
           }
         }
         if (!p3.isNext("</")) {
@@ -40854,18 +40854,18 @@ var require_dist_cjs7 = __commonJS({
           return { tag, value: "" };
         }
         if (!hasAttrs && !hasElementChild) {
-          const text = textParts.length === 1 ? textParts[0] : textParts.join("");
-          if (text.trim() === "" && text.includes("\n")) {
+          const text2 = textParts.length === 1 ? textParts[0] : textParts.join("");
+          if (text2.trim() === "" && text2.includes("\n")) {
             return { tag, value: "" };
           }
-          return { tag, value: text };
+          return { tag, value: text2 };
         }
         const obj = {};
-        for (const text of textParts) {
-          if (text.trim() === "" && text.includes("\n")) {
+        for (const text2 of textParts) {
+          if (text2.trim() === "" && text2.includes("\n")) {
             continue;
           }
-          obj["#text"] = "#text" in obj ? obj["#text"] + text : text;
+          obj["#text"] = "#text" in obj ? obj["#text"] + text2 : text2;
         }
         for (const child of childTags) {
           if (child.tag === "__proto__") {
@@ -40901,12 +40901,12 @@ var require_dist_cjs7 = __commonJS({
         p3.i += 9;
         let depth = 0;
         while (p3.i < p3.z) {
-          const c6 = p3.x[p3.i];
-          if (c6 === "[") {
+          const c5 = p3.x[p3.i];
+          if (c5 === "[") {
             ++depth;
-          } else if (c6 === "]") {
+          } else if (c5 === "]") {
             --depth;
-          } else if (c6 === ">" && depth === 0) {
+          } else if (c5 === ">" && depth === 0) {
             ++p3.i;
             return;
           }
@@ -46917,8 +46917,8 @@ var require_dist_cjs15 = __commonJS({
       const provider = async (options) => {
         if (options?.forceRefresh) {
           if (!forceRefreshLock) {
-            forceRefreshLock = chain3(options).then((c6) => {
-              credentials = c6;
+            forceRefreshLock = chain3(options).then((c5) => {
+              credentials = c5;
             }).finally(() => {
               forceRefreshLock = void 0;
             });
@@ -46936,16 +46936,16 @@ var require_dist_cjs15 = __commonJS({
         } else if (!credentials || treatAsExpired?.(credentials)) {
           if (credentials) {
             if (!passiveLock) {
-              passiveLock = chain3(options).then((c6) => {
-                credentials = c6;
+              passiveLock = chain3(options).then((c5) => {
+                credentials = c5;
               }).catch(() => {
               }).finally(() => {
                 passiveLock = void 0;
               });
             }
           } else {
-            activeLock = chain3(options).then((c6) => {
-              credentials = c6;
+            activeLock = chain3(options).then((c5) => {
+              credentials = c5;
             }).finally(() => {
               activeLock = void 0;
             });
@@ -47121,7 +47121,7 @@ var require_dist_cjs16 = __commonJS({
     var k5 = "ref";
     var a5 = -1;
     var b5 = true;
-    var c6 = "isSet";
+    var c5 = "isSet";
     var d5 = "PartitionResult";
     var e5 = "booleanEquals";
     var f5 = "getAttr";
@@ -47131,8 +47131,8 @@ var require_dist_cjs16 = __commonJS({
     var j5 = [{ [k5]: "Region" }];
     var _data5 = {
       conditions: [
-        [c6, [g5]],
-        [c6, j5],
+        [c5, [g5]],
+        [c5, j5],
         ["aws.partition", j5, d5],
         [e5, [{ [k5]: "UseFIPS" }, b5]],
         [e5, [{ [k5]: "UseDualStack" }, b5]],
@@ -48612,8 +48612,8 @@ var Summary = class {
    *
    * @returns {Summary} summary instance
    */
-  addRaw(text, addEOL = false) {
-    this._buffer += text;
+  addRaw(text2, addEOL = false) {
+    this._buffer += text2;
     return addEOL ? this.addEOL() : this;
   }
   /**
@@ -48709,10 +48709,10 @@ var Summary = class {
    *
    * @returns {Summary} summary instance
    */
-  addHeading(text, level) {
+  addHeading(text2, level) {
     const tag = `h${level}`;
     const allowedTag = ["h1", "h2", "h3", "h4", "h5", "h6"].includes(tag) ? tag : "h1";
-    const element = this.wrap(allowedTag, text);
+    const element = this.wrap(allowedTag, text2);
     return this.addRaw(element).addEOL();
   }
   /**
@@ -48741,9 +48741,9 @@ var Summary = class {
    *
    * @returns {Summary} summary instance
    */
-  addQuote(text, cite) {
+  addQuote(text2, cite) {
     const attrs = Object.assign({}, cite && { cite });
-    const element = this.wrap("blockquote", text, attrs);
+    const element = this.wrap("blockquote", text2, attrs);
     return this.addRaw(element).addEOL();
   }
   /**
@@ -48754,8 +48754,8 @@ var Summary = class {
    *
    * @returns {Summary} summary instance
    */
-  addLink(text, href) {
-    const element = this.wrap("a", text, { href });
+  addLink(text2, href) {
+    const element = this.wrap("a", text2, { href });
     return this.addRaw(element).addEOL();
   }
 };
@@ -48825,8 +48825,11 @@ var import_client_mwaa = __toESM(require_dist_cjs16(), 1);
 // src/format.ts
 var ANSI = { ok: "32", busy: "94", warn: "33", fail: "31", idle: "90" };
 var SUMMARY_DOT = { ok: "\u{1F7E2}", busy: "\u{1F535}", warn: "\u{1F7E1}", fail: "\u{1F534}", idle: "\u26AA" };
-var paint = (code, text) => `\x1B[${code}m${text}\x1B[0m`;
-var dim = (text) => paint("2", text);
+var paint = (code) => (text2) => `\x1B[${code}m${text2}\x1B[0m`;
+var bold = paint("1");
+var dim = paint("2");
+var green = paint("32");
+var cyan = paint("36");
 function toneOf(status) {
   switch (status) {
     case "AVAILABLE":
@@ -48849,171 +48852,155 @@ function toneOf(status) {
   }
 }
 function logStatus(status, tone = toneOf(status)) {
-  return paint(ANSI[tone], `\u25CF ${status || "unknown"}`);
+  return paint(ANSI[tone])(`\u25CF ${status || "unknown"}`);
 }
-function summaryStatus(status, tone = toneOf(status)) {
-  return `${SUMMARY_DOT[tone]} ${status ?? ""}`.trimEnd();
+var summaryDot = (tone) => SUMMARY_DOT[tone];
+function summaryStatus(status) {
+  return status ? `${summaryDot(toneOf(status))} ${status}` : summaryDot("idle");
 }
 function pollLine(status, updateStatus, elapsedSeconds, isOurs) {
-  if (!isOurs)
-    return `${logStatus(status, "idle")} ${dim(`(waiting for MWAA to start the update, ${elapsedSeconds}s)`)}`;
-  return `${logStatus(status)} ${dim(`(update: ${updateStatus ?? "n/a"}, ${elapsedSeconds}s)`)}`;
+  return isOurs ? `${logStatus(status)} ${dim(`(update: ${updateStatus ?? "n/a"}, ${elapsedSeconds}s)`)}` : `${logStatus(status, "idle")} ${dim(`(waiting for MWAA to start the update, ${elapsedSeconds}s)`)}`;
 }
+var formatValue = (value) => typeof value === "object" ? JSON.stringify(value) : String(value);
 
 // src/inputs.ts
-var STRINGS = {
-  "airflow-version": "AirflowVersion",
-  "source-bucket-arn": "SourceBucketArn",
-  "execution-role-arn": "ExecutionRoleArn",
-  "dag-s3-path": "DagS3Path",
-  "plugins-s3-path": "PluginsS3Path",
-  "plugins-s3-object-version": "PluginsS3ObjectVersion",
-  "requirements-s3-path": "RequirementsS3Path",
-  "requirements-s3-object-version": "RequirementsS3ObjectVersion",
-  "startup-script-s3-path": "StartupScriptS3Path",
-  "startup-script-s3-object-version": "StartupScriptS3ObjectVersion",
-  "environment-class": "EnvironmentClass",
-  "webserver-access-mode": "WebserverAccessMode",
-  "weekly-maintenance-window-start": "WeeklyMaintenanceWindowStart"
-};
-var INTEGERS = {
-  "min-workers": { key: "MinWorkers", min: 1 },
-  "max-workers": { key: "MaxWorkers", min: 1 },
-  "min-webservers": { key: "MinWebservers", min: 1 },
-  "max-webservers": { key: "MaxWebservers", min: 1 },
-  schedulers: { key: "Schedulers", min: 1 }
-};
-var JSON_INPUTS = {
-  "airflow-configuration-options": "AirflowConfigurationOptions",
-  "network-configuration": "NetworkConfiguration",
-  "logging-configuration": "LoggingConfiguration"
-};
-function parseJsonObject(name, raw) {
+var text = (raw) => raw;
+function positiveInt(raw, input) {
+  if (!/^\d+$/.test(raw)) throw new Error(`Input '${input}' must be an integer, got '${raw}'.`);
+  const value = Number(raw);
+  if (value < 1) throw new Error(`Input '${input}' must be at least 1, got ${value}.`);
+  return value;
+}
+function jsonObject(raw, input) {
   let value;
   try {
     value = JSON.parse(raw);
   } catch (error3) {
-    throw new Error(`Input '${name}' must be valid JSON: ${error3.message}`);
+    throw new Error(`Input '${input}' must be valid JSON: ${error3.message}`);
   }
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`Input '${name}' must be a JSON object.`);
+    throw new Error(`Input '${input}' must be a JSON object.`);
   }
   return value;
 }
-function parsePositiveInt(name, raw, min) {
-  if (!/^\d+$/.test(raw)) throw new Error(`Input '${name}' must be an integer, got '${raw}'.`);
-  const value = Number(raw);
-  if (value < min) throw new Error(`Input '${name}' must be at least ${min}, got ${value}.`);
+var oneOf = (...allowed) => (raw, input) => {
+  const value = raw.toUpperCase();
+  if (!allowed.includes(value)) throw new Error(`Input '${input}' must be ${allowed.join(" or ")}, got '${raw}'.`);
   return value;
+};
+function boolean(raw, input) {
+  const value = raw.toLowerCase();
+  if (value !== "true" && value !== "false")
+    throw new Error(`Input '${input}' must be 'true' or 'false', got '${raw}'.`);
+  return value === "true";
 }
+var FIELDS = [
+  ["airflow-version", "AirflowVersion", text],
+  ["source-bucket-arn", "SourceBucketArn", text],
+  ["execution-role-arn", "ExecutionRoleArn", text],
+  ["dag-s3-path", "DagS3Path", text],
+  ["plugins-s3-path", "PluginsS3Path", text],
+  ["plugins-s3-object-version", "PluginsS3ObjectVersion", text],
+  ["requirements-s3-path", "RequirementsS3Path", text],
+  ["requirements-s3-object-version", "RequirementsS3ObjectVersion", text],
+  ["startup-script-s3-path", "StartupScriptS3Path", text],
+  ["startup-script-s3-object-version", "StartupScriptS3ObjectVersion", text],
+  ["environment-class", "EnvironmentClass", text],
+  ["webserver-access-mode", "WebserverAccessMode", text],
+  ["weekly-maintenance-window-start", "WeeklyMaintenanceWindowStart", text],
+  ["min-workers", "MinWorkers", positiveInt],
+  ["max-workers", "MaxWorkers", positiveInt],
+  ["min-webservers", "MinWebservers", positiveInt],
+  ["max-webservers", "MaxWebservers", positiveInt],
+  ["schedulers", "Schedulers", positiveInt],
+  ["worker-replacement-strategy", "WorkerReplacementStrategy", oneOf("FORCED", "GRACEFUL")],
+  ["airflow-configuration-options", "AirflowConfigurationOptions", jsonObject],
+  ["network-configuration", "NetworkConfiguration", jsonObject],
+  ["logging-configuration", "LoggingConfiguration", jsonObject]
+];
+var RANGES = [
+  ["min-workers", "max-workers"],
+  ["min-webservers", "max-webservers"]
+];
 function parseInputs(get2) {
-  const read = (name2) => get2(name2).trim();
+  const read = (input) => get2(input).trim();
   const name = read("name");
   if (!name) throw new Error("Input 'name' is required.");
+  const parsed = /* @__PURE__ */ new Map();
   const request = { Name: name };
-  let changes = 0;
-  for (const [input, key] of Object.entries(STRINGS)) {
-    const value = read(input);
-    if (value) {
-      request[key] = value;
-      changes++;
+  for (const [input, field, parse2] of FIELDS) {
+    const raw = read(input);
+    if (!raw) continue;
+    request[field] = parse2(raw, input);
+    parsed.set(input, request[field]);
+  }
+  if (parsed.size === 0) throw new Error("No update inputs were set; nothing to update.");
+  for (const [low, high] of RANGES) {
+    const min = parsed.get(low);
+    const max = parsed.get(high);
+    if (min !== void 0 && max !== void 0 && min > max) {
+      throw new Error(`Input '${low}' (${min}) cannot exceed '${high}' (${max}).`);
     }
-  }
-  for (const [input, { key, min: min2 }] of Object.entries(INTEGERS)) {
-    const value = read(input);
-    if (value) {
-      request[key] = parsePositiveInt(input, value, min2);
-      changes++;
-    }
-  }
-  for (const [input, key] of Object.entries(JSON_INPUTS)) {
-    const value = read(input);
-    if (value) {
-      request[key] = parseJsonObject(input, value);
-      changes++;
-    }
-  }
-  const strategy = read("worker-replacement-strategy").toUpperCase();
-  if (strategy) {
-    if (strategy !== "FORCED" && strategy !== "GRACEFUL") {
-      throw new Error(`Input 'worker-replacement-strategy' must be FORCED or GRACEFUL, got '${strategy}'.`);
-    }
-    request.WorkerReplacementStrategy = strategy;
-    changes++;
-  }
-  if (changes === 0) throw new Error("No update inputs were set; nothing to update.");
-  const min = request.MinWorkers;
-  const max = request.MaxWorkers;
-  if (min !== void 0 && max !== void 0 && min > max) {
-    throw new Error(`Input 'min-workers' (${min}) cannot exceed 'max-workers' (${max}).`);
-  }
-  const minWeb = request.MinWebservers;
-  const maxWeb = request.MaxWebservers;
-  if (minWeb !== void 0 && maxWeb !== void 0 && minWeb > maxWeb) {
-    throw new Error(`Input 'min-webservers' (${minWeb}) cannot exceed 'max-webservers' (${maxWeb}).`);
-  }
-  const waitRaw = read("wait").toLowerCase() || "false";
-  if (waitRaw !== "true" && waitRaw !== "false") {
-    throw new Error(`Input 'wait' must be 'true' or 'false', got '${waitRaw}'.`);
   }
   return {
+    name,
     request,
     region: read("region") || void 0,
-    wait: waitRaw === "true",
-    pollIntervalSeconds: parsePositiveInt("poll-interval", read("poll-interval") || "30", 1),
-    timeoutSeconds: parsePositiveInt("timeout", read("timeout") || "3600", 1)
+    wait: boolean(read("wait") || "false", "wait"),
+    pollIntervalSeconds: positiveInt(read("poll-interval") || "30", "poll-interval"),
+    timeoutSeconds: positiveInt(read("timeout") || "3600", "timeout")
   };
 }
 
 // src/wait.ts
-var UpdateFailedError = class extends Error {
+var WaitError = class extends Error {
+  environment;
+  constructor(message, environment) {
+    super(message);
+    this.name = new.target.name;
+    this.environment = environment;
+  }
 };
-var WaitTimeoutError = class extends Error {
+var UpdateFailedError = class extends WaitError {
+};
+var WaitTimeoutError = class extends WaitError {
 };
 var FAILED_STATUSES = /* @__PURE__ */ new Set(["UPDATE_FAILED", "UNAVAILABLE", "CREATE_FAILED", "DELETING", "DELETED"]);
 var defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 function describeError(env2) {
-  const error3 = env2.LastUpdate?.Error;
-  if (!error3) return "no error details were returned";
-  return [error3.ErrorCode, error3.ErrorMessage].filter(Boolean).join(": ");
+  const { ErrorCode, ErrorMessage } = env2.LastUpdate?.Error ?? {};
+  return [ErrorCode, ErrorMessage].filter(Boolean).join(": ") || "no error details were returned";
 }
 async function waitForUpdate(options) {
+  const { fetch, previousUpdateAt, pollIntervalSeconds, timeoutSeconds, onPoll } = options;
   const sleep2 = options.sleep ?? defaultSleep;
   const now = options.now ?? Date.now;
   const start = now();
   for (; ; ) {
-    const env2 = await options.fetch();
+    const env2 = await fetch();
     const elapsed = Math.round((now() - start) / 1e3);
     const update = env2.LastUpdate;
-    const updatedAt = update?.CreatedAt?.getTime();
-    const isOurs = updatedAt !== options.previousUpdateAt;
-    options.onPoll?.(env2, elapsed, isOurs);
+    const isOurs = update?.CreatedAt?.getTime() !== previousUpdateAt;
+    onPoll?.(env2, elapsed, isOurs);
     if (FAILED_STATUSES.has(env2.Status ?? "")) {
-      throw new UpdateFailedError(`Environment entered ${env2.Status}: ${describeError(env2)}`);
+      throw new UpdateFailedError(`Environment entered ${env2.Status}: ${describeError(env2)}`, env2);
     }
     if (isOurs && update?.Status === "FAILED") {
-      throw new UpdateFailedError(`Environment update failed: ${describeError(env2)}`);
+      throw new UpdateFailedError(`Environment update failed: ${describeError(env2)}`, env2);
     }
-    if (isOurs && env2.Status === "AVAILABLE" && update?.Status === "SUCCESS") {
-      return env2;
-    }
-    if (elapsed + options.pollIntervalSeconds > options.timeoutSeconds) {
+    if (isOurs && env2.Status === "AVAILABLE" && update?.Status === "SUCCESS") return env2;
+    if (elapsed + pollIntervalSeconds > timeoutSeconds) {
       throw new WaitTimeoutError(
-        `Timed out after ${elapsed}s waiting for the environment to become AVAILABLE (status: ${env2.Status ?? "unknown"}).`
+        `Timed out after ${elapsed}s waiting for the environment to become AVAILABLE (status: ${env2.Status ?? "unknown"}).`,
+        env2
       );
     }
-    await sleep2(options.pollIntervalSeconds * 1e3);
+    await sleep2(pollIntervalSeconds * 1e3);
   }
 }
 
 // src/main.ts
-var c5 = {
-  green: (s2) => paint("32", s2),
-  cyan: (s2) => paint("36", s2),
-  bold: (s2) => paint("1", s2),
-  dim
-};
-var OUTPUT_FIELDS = [
+var OUTPUTS = [
   ["status", (e5) => e5.Status],
   ["last-update-status", (e5) => e5.LastUpdate?.Status],
   ["environment-arn", (e5) => e5.Arn],
@@ -49022,47 +49009,42 @@ var OUTPUT_FIELDS = [
   ["plugins-s3-object-version", (e5) => e5.PluginsS3ObjectVersion],
   ["startup-script-s3-object-version", (e5) => e5.StartupScriptS3ObjectVersion]
 ];
-function setOutputs(env2) {
-  for (const [name, read] of OUTPUT_FIELDS) setOutput(name, read(env2) ?? "");
-}
-async function writeSummary(name, requested, env2, outcome, outcomeTone) {
-  const settings = Object.entries(requested).filter(([key]) => key !== "Name").map(([key, value]) => [key, `<code>${typeof value === "object" ? JSON.stringify(value) : String(value)}</code>`]);
-  summary.addHeading(`MWAA environment update: ${name}`, 2).addRaw(`${summaryStatus(void 0, outcomeTone)} ${outcome}`, true).addHeading("Requested changes", 3).addTable([
-    [
-      { data: "Setting", header: true },
-      { data: "Value", header: true }
-    ],
-    ...settings
-  ]);
-  if (env2) {
-    summary.addHeading("Environment", 3).addTable([
-      [
-        { data: "Field", header: true },
-        { data: "Value", header: true }
-      ],
-      ["Status", summaryStatus(env2.Status)],
-      ["Last update", summaryStatus(env2.LastUpdate?.Status)],
-      ["Airflow version", env2.AirflowVersion ?? ""],
-      ["requirements.txt version", env2.RequirementsS3ObjectVersion ?? ""],
-      ["plugins.zip version", env2.PluginsS3ObjectVersion ?? ""],
-      ["startup script version", env2.StartupScriptS3ObjectVersion ?? ""]
-    ]);
-  }
-  await summary.write();
+var escapeHtml = (text2) => text2.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]);
+var requestedChanges = (request) => Object.entries(request).filter(([field]) => field !== "Name");
+async function finish(inputs, env2, outcome, tone) {
+  for (const [name, read] of OUTPUTS) setOutput(name, read(env2) ?? "");
+  const header = (a5, b5) => [
+    { data: a5, header: true },
+    { data: b5, header: true }
+  ];
+  await summary.addHeading(`MWAA environment update: ${escapeHtml(inputs.name)}`, 2).addRaw(`${summaryDot(tone)} ${outcome}`, true).addHeading("Requested changes", 3).addTable([
+    header("Setting", "Value"),
+    ...requestedChanges(inputs.request).map(([field, value]) => [
+      field,
+      `<code>${escapeHtml(formatValue(value))}</code>`
+    ])
+  ]).addHeading("Environment", 3).addTable([
+    header("Field", "Value"),
+    ["Status", summaryStatus(env2.Status)],
+    ["Last update", summaryStatus(env2.LastUpdate?.Status)],
+    ["Airflow version", env2.AirflowVersion ?? ""],
+    ["requirements.txt version", env2.RequirementsS3ObjectVersion ?? ""],
+    ["plugins.zip version", env2.PluginsS3ObjectVersion ?? ""],
+    ["startup script version", env2.StartupScriptS3ObjectVersion ?? ""]
+  ]).write();
 }
 async function run(deps = {}) {
-  const inputs = parseInputs((name2) => getInput(name2));
-  const name = inputs.request.Name;
+  const inputs = parseInputs((input) => getInput(input));
+  const { name } = inputs;
   const client = deps.client ?? new import_client_mwaa.MWAAClient(inputs.region ? { region: inputs.region } : {});
   const getEnvironment = async () => {
-    const { Environment: env2 } = await client.send(new import_client_mwaa.GetEnvironmentCommand({ Name: name }));
-    if (!env2) throw new Error(`Environment '${name}' was not found.`);
-    return env2;
+    const { Environment: env3 } = await client.send(new import_client_mwaa.GetEnvironmentCommand({ Name: name }));
+    if (!env3) throw new Error(`Environment '${name}' was not found.`);
+    return env3;
   };
-  startGroup(c5.bold(`Requested changes for ${c5.cyan(name)}`));
-  for (const [key, value] of Object.entries(inputs.request)) {
-    if (key !== "Name")
-      info(`  ${c5.dim(key.padEnd(30))} ${typeof value === "object" ? JSON.stringify(value) : value}`);
+  startGroup(bold(`Requested changes for ${cyan(name)}`));
+  for (const [field, value] of requestedChanges(inputs.request)) {
+    info(`  ${dim(field.padEnd(30))} ${formatValue(value)}`);
   }
   endGroup();
   const before = await getEnvironment();
@@ -49070,45 +49052,35 @@ async function run(deps = {}) {
   if (before.Status !== "AVAILABLE") {
     throw new Error(`Environment is ${before.Status}; it must be AVAILABLE before it can be updated.`);
   }
-  const previousUpdateAt = before.LastUpdate?.CreatedAt?.getTime();
-  info(`Submitting update to ${c5.cyan(name)}...`);
+  info(`Submitting update to ${cyan(name)}...`);
   await client.send(new import_client_mwaa.UpdateEnvironmentCommand(inputs.request));
-  info(c5.green("Update accepted by MWAA."));
-  let final;
-  if (inputs.wait) {
-    startGroup(c5.bold(`Waiting for ${name} to become AVAILABLE`));
-    try {
-      final = await waitForUpdate({
-        fetch: getEnvironment,
-        previousUpdateAt,
-        sleep: deps.sleep,
-        pollIntervalSeconds: inputs.pollIntervalSeconds,
-        timeoutSeconds: inputs.timeoutSeconds,
-        onPoll: (env2, elapsed, isOurs) => info(pollLine(env2.Status, env2.LastUpdate?.Status, elapsed, isOurs))
-      });
-    } catch (error3) {
-      endGroup();
-      const latest = await getEnvironment().catch(() => void 0);
-      if (latest) setOutputs(latest);
-      if (error3 instanceof UpdateFailedError || error3 instanceof WaitTimeoutError) {
-        await writeSummary(name, inputs.request, latest, `**Failed:** ${error3.message}`, "fail");
-      }
-      throw error3;
-    }
-    endGroup();
-    info(c5.green(`\u25CF ${name} is AVAILABLE and the update succeeded.`));
-  } else {
-    final = await getEnvironment();
-    info(c5.dim("Not waiting (wait: false); the environment will keep updating in the background."));
+  info(green("Update accepted by MWAA."));
+  if (!inputs.wait) {
+    info(dim("Not waiting (wait: false); the environment will keep updating in the background."));
+    return finish(inputs, await getEnvironment(), "Update submitted; not waiting for completion.", "busy");
   }
-  setOutputs(final);
-  await writeSummary(
-    name,
-    inputs.request,
-    final,
-    inputs.wait ? "Update completed successfully." : "Update submitted; not waiting for completion.",
-    inputs.wait ? "ok" : "busy"
-  );
+  startGroup(bold(`Waiting for ${name} to become AVAILABLE`));
+  let env2;
+  try {
+    env2 = await waitForUpdate({
+      fetch: getEnvironment,
+      previousUpdateAt: before.LastUpdate?.CreatedAt?.getTime(),
+      pollIntervalSeconds: inputs.pollIntervalSeconds,
+      timeoutSeconds: inputs.timeoutSeconds,
+      sleep: deps.sleep,
+      now: deps.now,
+      onPoll: (e5, elapsed, isOurs) => info(pollLine(e5.Status, e5.LastUpdate?.Status, elapsed, isOurs))
+    });
+  } catch (error3) {
+    if (error3 instanceof WaitError) {
+      await finish(inputs, error3.environment, `**Failed:** ${escapeHtml(error3.message)}`, "fail");
+    }
+    throw error3;
+  } finally {
+    endGroup();
+  }
+  info(green(`\u25CF ${name} is AVAILABLE and the update succeeded.`));
+  await finish(inputs, env2, "Update completed successfully.", "ok");
 }
 
 // src/index.ts

@@ -1,6 +1,7 @@
 import type { UpdateEnvironmentCommandInput } from '@aws-sdk/client-mwaa'
 
 export interface ActionInputs {
+  name: string
   request: UpdateEnvironmentCommandInput
   region: string | undefined
   wait: boolean
@@ -10,120 +11,107 @@ export interface ActionInputs {
 
 export type InputGetter = (name: string) => string
 
-const STRINGS: Record<string, keyof UpdateEnvironmentCommandInput> = {
-  'airflow-version': 'AirflowVersion',
-  'source-bucket-arn': 'SourceBucketArn',
-  'execution-role-arn': 'ExecutionRoleArn',
-  'dag-s3-path': 'DagS3Path',
-  'plugins-s3-path': 'PluginsS3Path',
-  'plugins-s3-object-version': 'PluginsS3ObjectVersion',
-  'requirements-s3-path': 'RequirementsS3Path',
-  'requirements-s3-object-version': 'RequirementsS3ObjectVersion',
-  'startup-script-s3-path': 'StartupScriptS3Path',
-  'startup-script-s3-object-version': 'StartupScriptS3ObjectVersion',
-  'environment-class': 'EnvironmentClass',
-  'webserver-access-mode': 'WebserverAccessMode',
-  'weekly-maintenance-window-start': 'WeeklyMaintenanceWindowStart'
+type Parse = (raw: string, input: string) => unknown
+
+const text: Parse = (raw) => raw
+
+function positiveInt(raw: string, input: string): number {
+  if (!/^\d+$/.test(raw)) throw new Error(`Input '${input}' must be an integer, got '${raw}'.`)
+  const value = Number(raw)
+  if (value < 1) throw new Error(`Input '${input}' must be at least 1, got ${value}.`)
+  return value
 }
 
-const INTEGERS: Record<string, { key: keyof UpdateEnvironmentCommandInput; min: number }> = {
-  'min-workers': { key: 'MinWorkers', min: 1 },
-  'max-workers': { key: 'MaxWorkers', min: 1 },
-  'min-webservers': { key: 'MinWebservers', min: 1 },
-  'max-webservers': { key: 'MaxWebservers', min: 1 },
-  schedulers: { key: 'Schedulers', min: 1 }
-}
-
-const JSON_INPUTS: Record<string, keyof UpdateEnvironmentCommandInput> = {
-  'airflow-configuration-options': 'AirflowConfigurationOptions',
-  'network-configuration': 'NetworkConfiguration',
-  'logging-configuration': 'LoggingConfiguration'
-}
-
-function parseJsonObject(name: string, raw: string): unknown {
+function jsonObject(raw: string, input: string): object {
   let value: unknown
   try {
     value = JSON.parse(raw)
   } catch (error) {
-    throw new Error(`Input '${name}' must be valid JSON: ${(error as Error).message}`)
+    throw new Error(`Input '${input}' must be valid JSON: ${(error as Error).message}`)
   }
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error(`Input '${name}' must be a JSON object.`)
+    throw new Error(`Input '${input}' must be a JSON object.`)
   }
   return value
 }
 
-function parsePositiveInt(name: string, raw: string, min: number): number {
-  if (!/^\d+$/.test(raw)) throw new Error(`Input '${name}' must be an integer, got '${raw}'.`)
-  const value = Number(raw)
-  if (value < min) throw new Error(`Input '${name}' must be at least ${min}, got ${value}.`)
-  return value
+const oneOf =
+  (...allowed: string[]): Parse =>
+  (raw, input) => {
+    const value = raw.toUpperCase()
+    if (!allowed.includes(value)) throw new Error(`Input '${input}' must be ${allowed.join(' or ')}, got '${raw}'.`)
+    return value
+  }
+
+function boolean(raw: string, input: string): boolean {
+  const value = raw.toLowerCase()
+  if (value !== 'true' && value !== 'false')
+    throw new Error(`Input '${input}' must be 'true' or 'false', got '${raw}'.`)
+  return value === 'true'
 }
 
-// Unset inputs are never sent, so the API leaves those settings untouched.
+// Each update input and the UpdateEnvironment field it fills. Unset inputs are left out of
+// the request, so MWAA keeps the current value for those fields.
+const FIELDS: Array<[input: string, field: keyof UpdateEnvironmentCommandInput, parse: Parse]> = [
+  ['airflow-version', 'AirflowVersion', text],
+  ['source-bucket-arn', 'SourceBucketArn', text],
+  ['execution-role-arn', 'ExecutionRoleArn', text],
+  ['dag-s3-path', 'DagS3Path', text],
+  ['plugins-s3-path', 'PluginsS3Path', text],
+  ['plugins-s3-object-version', 'PluginsS3ObjectVersion', text],
+  ['requirements-s3-path', 'RequirementsS3Path', text],
+  ['requirements-s3-object-version', 'RequirementsS3ObjectVersion', text],
+  ['startup-script-s3-path', 'StartupScriptS3Path', text],
+  ['startup-script-s3-object-version', 'StartupScriptS3ObjectVersion', text],
+  ['environment-class', 'EnvironmentClass', text],
+  ['webserver-access-mode', 'WebserverAccessMode', text],
+  ['weekly-maintenance-window-start', 'WeeklyMaintenanceWindowStart', text],
+  ['min-workers', 'MinWorkers', positiveInt],
+  ['max-workers', 'MaxWorkers', positiveInt],
+  ['min-webservers', 'MinWebservers', positiveInt],
+  ['max-webservers', 'MaxWebservers', positiveInt],
+  ['schedulers', 'Schedulers', positiveInt],
+  ['worker-replacement-strategy', 'WorkerReplacementStrategy', oneOf('FORCED', 'GRACEFUL')],
+  ['airflow-configuration-options', 'AirflowConfigurationOptions', jsonObject],
+  ['network-configuration', 'NetworkConfiguration', jsonObject],
+  ['logging-configuration', 'LoggingConfiguration', jsonObject]
+]
+
+const RANGES = [
+  ['min-workers', 'max-workers'],
+  ['min-webservers', 'max-webservers']
+] as const
+
 export function parseInputs(get: InputGetter): ActionInputs {
-  const read = (name: string): string => get(name).trim()
+  const read = (input: string): string => get(input).trim()
 
   const name = read('name')
   if (!name) throw new Error("Input 'name' is required.")
 
+  const parsed = new Map<string, unknown>()
   const request: Record<string, unknown> = { Name: name }
-  let changes = 0
+  for (const [input, field, parse] of FIELDS) {
+    const raw = read(input)
+    if (!raw) continue
+    request[field] = parse(raw, input)
+    parsed.set(input, request[field])
+  }
+  if (parsed.size === 0) throw new Error('No update inputs were set; nothing to update.')
 
-  for (const [input, key] of Object.entries(STRINGS)) {
-    const value = read(input)
-    if (value) {
-      request[key] = value
-      changes++
+  for (const [low, high] of RANGES) {
+    const min = parsed.get(low) as number | undefined
+    const max = parsed.get(high) as number | undefined
+    if (min !== undefined && max !== undefined && min > max) {
+      throw new Error(`Input '${low}' (${min}) cannot exceed '${high}' (${max}).`)
     }
-  }
-  for (const [input, { key, min }] of Object.entries(INTEGERS)) {
-    const value = read(input)
-    if (value) {
-      request[key] = parsePositiveInt(input, value, min)
-      changes++
-    }
-  }
-  for (const [input, key] of Object.entries(JSON_INPUTS)) {
-    const value = read(input)
-    if (value) {
-      request[key] = parseJsonObject(input, value)
-      changes++
-    }
-  }
-
-  const strategy = read('worker-replacement-strategy').toUpperCase()
-  if (strategy) {
-    if (strategy !== 'FORCED' && strategy !== 'GRACEFUL') {
-      throw new Error(`Input 'worker-replacement-strategy' must be FORCED or GRACEFUL, got '${strategy}'.`)
-    }
-    request.WorkerReplacementStrategy = strategy
-    changes++
-  }
-
-  if (changes === 0) throw new Error('No update inputs were set; nothing to update.')
-
-  const min = request.MinWorkers as number | undefined
-  const max = request.MaxWorkers as number | undefined
-  if (min !== undefined && max !== undefined && min > max) {
-    throw new Error(`Input 'min-workers' (${min}) cannot exceed 'max-workers' (${max}).`)
-  }
-  const minWeb = request.MinWebservers as number | undefined
-  const maxWeb = request.MaxWebservers as number | undefined
-  if (minWeb !== undefined && maxWeb !== undefined && minWeb > maxWeb) {
-    throw new Error(`Input 'min-webservers' (${minWeb}) cannot exceed 'max-webservers' (${maxWeb}).`)
-  }
-
-  const waitRaw = read('wait').toLowerCase() || 'false'
-  if (waitRaw !== 'true' && waitRaw !== 'false') {
-    throw new Error(`Input 'wait' must be 'true' or 'false', got '${waitRaw}'.`)
   }
 
   return {
+    name,
     request: request as unknown as UpdateEnvironmentCommandInput,
     region: read('region') || undefined,
-    wait: waitRaw === 'true',
-    pollIntervalSeconds: parsePositiveInt('poll-interval', read('poll-interval') || '30', 1),
-    timeoutSeconds: parsePositiveInt('timeout', read('timeout') || '3600', 1)
+    wait: boolean(read('wait') || 'false', 'wait'),
+    pollIntervalSeconds: positiveInt(read('poll-interval') || '30', 'poll-interval'),
+    timeoutSeconds: positiveInt(read('timeout') || '3600', 'timeout')
   }
 }

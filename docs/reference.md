@@ -2,6 +2,12 @@
 
 Every input except `name` is optional. The action sends only the inputs you set, so MWAA keeps the current value for everything else, and the step fails before calling AWS when no update input is set.
 
+On this page:
+
+- [Inputs](#inputs)
+  - [Validation](#validation)
+- [Outputs](#outputs)
+
 ## Inputs
 
 | Input | Description |

@@ -1,5 +1,14 @@
 # Guides
 
+Setting up credentials, waiting for updates, using this action with [mwaa-get-env-action](https://github.com/lowlysre/mwaa-get-env-action), and fixing common failures.
+
+On this page:
+
+- [AWS credentials and permissions](#aws-credentials-and-permissions)
+- [Wait for an update to finish](#wait-for-an-update-to-finish)
+- [Read, update, and confirm](#read-update-and-confirm)
+- [Troubleshooting](#troubleshooting)
+
 ## AWS credentials and permissions
 
 The action reads credentials from the standard AWS environment variables, so any step that exports them works. The usual choice is [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) with GitHub OIDC, which avoids long-lived access keys. The job needs `id-token: write`, and the role's trust policy should restrict the repository and branch that deploy.

@@ -13,5 +13,6 @@ npm run build   # bundles src/ into dist/
 - `test/main.test.ts` runs the real `@actions/core` against temp files and injects a fake MWAA client. Add new behavior there, and put pure logic in `test/inputs.test.ts` or `test/wait.test.ts`.
 - Pin new `uses:` entries in workflows to full commit SHAs with the release tag as a comment, and put `step-security/harden-runner` first in every job with `egress-policy: block` and the endpoints that job needs.
 - Lint configs live in `.github/linters/`, which MegaLinter reads by default, and the workflow sets `MEGALINTER_CONFIG` to `.github/linters/.mega-linter.yml`. Keep tool config out of the repository root. Format with `npx prettier --config .github/linters/.prettierrc.json --write <files>`.
+- Each page in `docs/` starts with an `On this page:` list of its `##` and `###` headings. `npm run check` runs `scripts/check-docs.mjs`, which fails when that list drifts from the headings or when a relative link or anchor in the README or docs is broken.
 - Run `zizmor --persona pedantic .github` (CI uses the same persona) and `actionlint` before changing workflows.
 - `docs/public/social-card.png` is rendered from `docs/public/social-card.svg` with [@resvg/resvg-js](https://github.com/yisibl/resvg-js), using the Segoe UI and Cascadia Mono font files. Edit the SVG, re-render at 1280x640, and commit both.

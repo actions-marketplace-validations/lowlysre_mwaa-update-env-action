@@ -1,5 +1,14 @@
 # How the action works
 
+The design choices behind the action and what happens during a run.
+
+On this page:
+
+- [SDK instead of the CLI](#sdk-instead-of-the-cli)
+- [Partial updates](#partial-updates)
+- [The run](#the-run)
+- [Telling this update from the last one](#telling-this-update-from-the-last-one)
+
 ## SDK instead of the CLI
 
 The action calls `UpdateEnvironment` and `GetEnvironment` through the AWS SDK for JavaScript v3, bundled into `dist/`. That is the API behind `aws mwaa update-environment`, so the runner needs no AWS CLI and CLI releases can't change the action's behavior. Credentials come from the SDK's default provider chain, which reads the environment variables `configure-aws-credentials` exports. MWAA CLI and web login tokens aren't involved: they run Airflow commands against the web server and aren't needed to manage the environment.

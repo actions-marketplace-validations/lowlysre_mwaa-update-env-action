@@ -1,0 +1,112 @@
+name: MWAA Update Environment
+description: Update an Amazon MWAA environment (aws mwaa update-environment) using plain AWS credentials, optionally waiting until it is AVAILABLE again.
+author: lowlysre
+branding:
+  icon: refresh-cw
+  color: orange
+
+inputs:
+  name:
+    description: Name of the MWAA environment to update.
+    required: true
+  airflow-version:
+    description: Apache Airflow version to upgrade to.
+    required: false
+  source-bucket-arn:
+    description: ARN of the S3 bucket holding DAGs, plugins, requirements and startup script.
+    required: false
+  execution-role-arn:
+    description: ARN of the execution role for the environment.
+    required: false
+  dag-s3-path:
+    description: Relative path of the DAGs folder in the source bucket.
+    required: false
+  plugins-s3-path:
+    description: Relative path of plugins.zip in the source bucket.
+    required: false
+  plugins-s3-object-version:
+    description: S3 object version of plugins.zip.
+    required: false
+  requirements-s3-path:
+    description: Relative path of requirements.txt in the source bucket.
+    required: false
+  requirements-s3-object-version:
+    description: S3 object version of requirements.txt.
+    required: false
+  startup-script-s3-path:
+    description: Relative path of the startup script in the source bucket.
+    required: false
+  startup-script-s3-object-version:
+    description: S3 object version of the startup script.
+    required: false
+  environment-class:
+    description: Environment class (mw1.small, mw1.medium, mw1.large, ...).
+    required: false
+  min-workers:
+    description: Minimum number of workers.
+    required: false
+  max-workers:
+    description: Maximum number of workers.
+    required: false
+  min-webservers:
+    description: Minimum number of web servers.
+    required: false
+  max-webservers:
+    description: Maximum number of web servers.
+    required: false
+  schedulers:
+    description: Number of schedulers.
+    required: false
+  webserver-access-mode:
+    description: PRIVATE_ONLY, PUBLIC_ONLY or PUBLIC_AND_PRIVATE (Airflow 3.2+).
+    required: false
+  weekly-maintenance-window-start:
+    description: Maintenance window start, e.g. SAT:03:00.
+    required: false
+  worker-replacement-strategy:
+    description: How workers are replaced during the update, FORCED or GRACEFUL.
+    required: false
+  airflow-configuration-options:
+    description: Airflow configuration options as a JSON object, e.g. '{"core.default_timezone":"utc"}'.
+    required: false
+  network-configuration:
+    description: Network configuration as JSON (SecurityGroupIds).
+    required: false
+  logging-configuration:
+    description: Logging configuration as JSON.
+    required: false
+  region:
+    description: AWS region. Defaults to the region from the configured AWS credentials/environment.
+    required: false
+  wait:
+    description: Wait until the environment returns to AVAILABLE; fail if the update fails.
+    required: false
+    default: "false"
+  poll-interval:
+    description: Seconds between status checks when wait is true.
+    required: false
+    default: "30"
+  timeout:
+    description: Maximum seconds to wait when wait is true.
+    required: false
+    default: "3600"
+
+outputs:
+  status:
+    description: Environment status when the action finished (e.g. AVAILABLE, UPDATING).
+  last-update-status:
+    description: Status of the last update (SUCCESS, PENDING, FAILED).
+  environment-arn:
+    description: ARN of the environment.
+  airflow-version:
+    description: Airflow version of the environment.
+  requirements-s3-object-version:
+    description: S3 object version of requirements.txt in use.
+  plugins-s3-object-version:
+    description: S3 object version of plugins.zip in use.
+  startup-script-s3-object-version:
+    description: S3 object version of the startup script in use.
+
+runs:
+  using: node24
+  main: dist/index.cjs

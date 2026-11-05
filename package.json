@@ -1,0 +1,26 @@
+{
+  "name": "mwaa-update-env-action",
+  "version": "0.0.0",
+  "private": true,
+  "description": "GitHub Action that updates an Amazon MWAA environment",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.cjs --legal-comments=none",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "check": "npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@aws-sdk/client-mwaa": "^3.1162.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

@@ -11,15 +11,15 @@
 
 # MWAA Update Environment
 
-Update an Amazon MWAA environment from GitHub Actions and, optionally, wait until it is `AVAILABLE` again. The action calls the same API as `aws mwaa update-environment`, sends only the settings you set, and fails the step if the update fails.
+Ship a new `requirements.txt`, bump the worker count, or upgrade Airflow on an Amazon MWAA environment straight from a workflow, and optionally hold the step until the environment is `AVAILABLE` again. If the update fails, so does the step, with MWAA's error message in the log.
 
-It authenticates with the AWS credentials already in the job environment, so it needs no MWAA CLI tokens and no AWS CLI on the runner. Run [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) first.
+It uses the AWS credentials the job already has, so there are no MWAA CLI tokens to juggle and no AWS CLI needed on the runner. Run [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) first and you're set.
 
-- **Two runtime dependencies:** `@actions/core` and the AWS SDK's MWAA client, bundled into `dist/` with their [license notices](dist/THIRD_PARTY_NOTICES.txt).
-- **Immutable releases:** a published release's tag and assets can't be moved or replaced, so pinning a release tag such as `v1.0.0` pins the exact code you reviewed.
-- **Hardened CI:** every workflow job runs [harden-runner](https://github.com/step-security/harden-runner) with outbound traffic blocked except for listed endpoints. zizmor (pedantic persona), CodeQL, and OpenSSF Scorecard check the repository.
+- 📦 Two runtime dependencies, `@actions/core` and the AWS SDK's MWAA client, bundled into `dist/` with their [license notices](dist/THIRD_PARTY_NOTICES.txt).
+- 🔒 Immutable releases: once a release is published, its tag and assets are locked, so pinning `v1.0.0` gets you exactly the code you reviewed.
+- 🛡️ Locked-down CI: every job runs [harden-runner](https://github.com/step-security/harden-runner) with outbound traffic blocked except for listed endpoints, and zizmor (pedantic), CodeQL, and OpenSSF Scorecard check the repo.
 
-This action is built and maintained by [lowlysre](https://github.com/lowlysre). It's an independent project, not affiliated with or endorsed by AWS.
+Built and maintained by [lowlysre](https://github.com/lowlysre) 🐍. It's an independent project, not affiliated with or endorsed by AWS.
 
 ## Quick start
 
@@ -63,24 +63,22 @@ With `wait: true`, the step succeeds once the environment is `AVAILABLE` and the
 
 ## Features
 
-Each run logs the requested changes, prints a color-coded status dot on every poll while it waits (green done, blue in progress, yellow rolling back, red failed), and writes a job summary with the final environment state.
+While it waits, each poll prints a colored status dot (green done, blue in progress, yellow rolling back, red failed), and every run ends with a job summary of the final environment state.
 
 | Feature | Behavior |
 | --- | --- |
-| Partial updates | Only inputs you set are sent. Everything else keeps its current value. |
-| Input validation | Bad numbers, bad JSON, and `min-*` above `max-*` fail before any AWS call. |
-| Wait mode | Polls until the new update succeeds, fails the step on `FAILED`, `UPDATE_FAILED`, `UNAVAILABLE`, or timeout, and surfaces the MWAA error code and message. |
-| Outputs | Final status, last update status, ARN, Airflow version, and the S3 object versions in use. Set even when a waited update fails. |
-| No CLI dependency | Uses the AWS SDK for JavaScript, so runner CLI versions don't matter. |
+| Wait mode | Polls until your update finishes. `FAILED`, `UPDATE_FAILED`, `UNAVAILABLE`, or a timeout fails the step with MWAA's error code and message. |
+| Input validation | Bad numbers, bad JSON, or a `min-*` above its `max-*` fail the step before anything reaches AWS. |
+| Outputs | Status, last update status, ARN, Airflow version, and the S3 object versions in use, set even when a waited update fails. |
+| No AWS CLI | Talks to MWAA through the AWS SDK, so the runner's CLI version doesn't matter. |
 
 ## This action or the AWS CLI
 
-You can run `aws mwaa update-environment` in a `run` step. This action covers the parts the CLI leaves to you.
+You can run `aws mwaa update-environment` in a `run` step. Here's what you'd be writing yourself.
 
 | Need | This action | AWS CLI in a `run` step |
 | --- | --- | --- |
 | Update environment settings | ✅ | ✅ |
-| Send only the settings you set | ✅ Unset inputs are omitted | Build the argument list yourself |
 | Wait for the update to finish | ✅ `wait: true` | Poll `get-environment` in a script |
 | Tell a new update from the previous one while polling | ✅ | Compare `LastUpdate.CreatedAt` yourself |
 | Fail the step with the MWAA error message | ✅ | Parse `LastUpdate.Error` yourself |

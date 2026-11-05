@@ -48849,7 +48849,7 @@ function toneOf(status) {
   }
 }
 function logStatus(status, tone = toneOf(status)) {
-  return paint(ANSI[tone], `\u25CF ${status ?? "unknown"}`);
+  return paint(ANSI[tone], `\u25CF ${status || "unknown"}`);
 }
 function summaryStatus(status, tone = toneOf(status)) {
   return `${SUMMARY_DOT[tone]} ${status ?? ""}`.trimEnd();

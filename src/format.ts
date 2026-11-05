@@ -31,7 +31,7 @@ export function toneOf(status: string | undefined): Tone {
 
 // A colored "● STATUS" for the step log.
 export function logStatus(status: string | undefined, tone: Tone = toneOf(status)): string {
-  return paint(ANSI[tone], `● ${status ?? 'unknown'}`)
+  return paint(ANSI[tone], `● ${status || 'unknown'}`)
 }
 
 // A "🟢 STATUS" for the job summary, which renders markdown and ignores ANSI codes.

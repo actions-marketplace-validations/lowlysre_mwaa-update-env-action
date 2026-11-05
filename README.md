@@ -4,6 +4,8 @@
 
 <p align="center">
   <a href="https://github.com/lowlysre/mwaa-update-env-action/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lowlysre/mwaa-update-env-action/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/lowlysre/mwaa-update-env-action/actions/workflows/codeql.yml"><img alt="CodeQL" src="https://github.com/lowlysre/mwaa-update-env-action/actions/workflows/codeql.yml/badge.svg"></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/lowlysre/mwaa-update-env-action"><img alt="OpenSSF Scorecard" src="https://api.scorecard.dev/projects/github.com/lowlysre/mwaa-update-env-action/badge"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/lowlysre/mwaa-update-env-action"></a>
 </p>
 
@@ -12,6 +14,10 @@
 Update an Amazon MWAA environment from GitHub Actions and, optionally, wait until it is `AVAILABLE` again. The action calls the same API as `aws mwaa update-environment`, sends only the settings you set, and fails the step if the update fails.
 
 It authenticates with the AWS credentials already in the job environment, so it needs no MWAA CLI tokens and no AWS CLI on the runner. Run [aws-actions/configure-aws-credentials](https://github.com/aws-actions/configure-aws-credentials) first.
+
+- **Two runtime dependencies:** `@actions/core` and the AWS SDK's MWAA client, bundled into `dist/` with their [license notices](dist/THIRD_PARTY_NOTICES.txt).
+- **Immutable releases:** a published release's tag and assets can't be moved or replaced, so pinning a release tag such as `v1.0.0` pins the exact code you reviewed.
+- **Hardened CI:** every workflow job runs [harden-runner](https://github.com/step-security/harden-runner) with outbound traffic blocked except for listed endpoints. zizmor (pedantic persona), CodeQL, and OpenSSF Scorecard check the repository.
 
 This action is built and maintained by [lowlysre](https://github.com/lowlysre). It's an independent project, not affiliated with or endorsed by AWS.
 

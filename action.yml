@@ -97,6 +97,7 @@ outputs:
   last-update-status:
     description: Status of the last update (SUCCESS, PENDING, FAILED).
   environment-arn:
+    description: Environment ARN.
   airflow-version:
     description: Airflow version of the environment.
   requirements-s3-object-version:

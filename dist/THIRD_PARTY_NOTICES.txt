@@ -643,14 +643,11 @@ Apache License
 
 -----------
 
-The following npm packages may be included in this product:
+The following npm package may be included in this product:
 
  - @aws-sdk/client-mwaa@3.1162.0
- - @aws-sdk/credential-provider-http@3.972.83
- - @aws-sdk/credential-provider-login@3.972.88
- - @aws-sdk/nested-clients@3.998.0
 
-These packages each contain the following license:
+This package contains the following license:
 
 Apache License
                            Version 2.0, January 2004

@@ -104,6 +104,6 @@ The [guides](docs/guides.md#read-update-and-confirm) combine both: read the envi
 
 Copyright 2026 lowlysre / John McCall. This action is licensed under the [MIT License](LICENSE).
 
-The action runs a bundled build in `dist/` that includes third-party code, mainly the AWS SDK for JavaScript (Apache-2.0) and the GitHub Actions toolkit (MIT). [dist/THIRD_PARTY_NOTICES.txt](dist/THIRD_PARTY_NOTICES.txt) lists every bundled package with its license text and attributions, and the build regenerates it.
+The action runs a bundled build in `dist/` that includes third-party code, mainly the AWS SDK for JavaScript (Apache-2.0) and the GitHub Actions toolkit (MIT). [dist/THIRD_PARTY_NOTICES.txt](dist/THIRD_PARTY_NOTICES.txt) lists every production dependency with its license text and attributions, and the build regenerates it with [third-party-notices](https://www.npmjs.com/package/third-party-notices).
 
 AWS, Amazon MWAA, and Amazon S3 are trademarks of Amazon.com, Inc. or its affiliates. This project is independent and not affiliated with or endorsed by AWS.

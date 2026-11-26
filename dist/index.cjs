@@ -47123,7 +47123,7 @@ var require_dist_cjs16 = __commonJS({
       Region: { type: "builtInParams", name: "region" },
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
-    var version = "3.1166.0";
+    var version = "3.1171.0";
     var packageInfo = {
       version
     };
@@ -47330,6 +47330,7 @@ var require_dist_cjs16 = __commonJS({
     var _ACO = "AirflowConfigurationOptions";
     var _ADE3 = "AccessDeniedException";
     var _AI = "AirflowIdentity";
+    var _AOU = "AddOrUpdate";
     var _AV = "AirflowVersion";
     var _B = "Body";
     var _CA2 = "CreatedAt";
@@ -47367,11 +47368,13 @@ var require_dist_cjs16 = __commonJS({
     var _GE = "GetEnvironment";
     var _GEI = "GetEnvironmentInput";
     var _GEO = "GetEnvironmentOutput";
+    var _ICC = "IdentityCenterConfiguration";
     var _II = "IamIdentity";
     var _IRA = "InvokeRestApi";
     var _IRAR = "InvokeRestApiRequest";
     var _IRARn = "InvokeRestApiResponse";
     var _ISE3 = "InternalServerException";
+    var _ISI = "IdentityStoreId";
     var _KK = "KmsKey";
     var _LC = "LoggingConfiguration";
     var _LCI = "LoggingConfigurationInput";
@@ -47407,6 +47410,7 @@ var require_dist_cjs16 = __commonJS({
     var _PSOV = "PluginsS3ObjectVersion";
     var _PSP = "PluginsS3Path";
     var _QP = "QueryParameters";
+    var _R = "Remove";
     var _RA2 = "ResourceArn";
     var _RACE = "RestApiClientException";
     var _RAR = "RestApiResponse";
@@ -47426,17 +47430,21 @@ var require_dist_cjs16 = __commonJS({
     var _SS = "StatisticSet";
     var _SSSOV = "StartupScriptS3ObjectVersion";
     var _SSSP = "StartupScriptS3Path";
+    var _SU = "StartUrl";
     var _SUE = "ServiceUnavailableException";
     var _SV = "StatisticValues";
     var _So = "Source";
     var _St = "Status";
     var _Su = "Sum";
     var _T2 = "Token";
+    var _TC2 = "TeamConfig";
     var _TL = "TaskLogs";
+    var _TM = "TeamMap";
     var _TR = "TagResource";
     var _TRI = "TagResourceInput";
     var _TRO = "TagResourceOutput";
     var _Ta2 = "Tags";
+    var _Te = "Teams";
     var _Ti = "Timestamp";
     var _U = "Unit";
     var _UE2 = "UpdateError";
@@ -47447,6 +47455,7 @@ var require_dist_cjs16 = __commonJS({
     var _UR = "UntagResource";
     var _URI = "UntagResourceInput";
     var _URO = "UntagResourceOutput";
+    var _UTI = "UpdateTeamsInput";
     var _V2 = "Value";
     var _VE2 = "ValidationException";
     var _WAM = "WebserverAccessMode";
@@ -47566,8 +47575,8 @@ var require_dist_cjs16 = __commonJS({
       n05,
       _CEI,
       0,
-      [_N, _ERA, _SBA, _DSP, _NC, _PSP, _PSOV, _RSP, _RSOV, _SSSP, _SSSOV, _ACO, _EC, _MW, _KK, _AV, _LC, _WMWS, _Ta2, _WAM, _MWi, _S, _EM, _MWin, _MWa],
-      [[0, 1], 0, 0, 0, () => NetworkConfiguration$, 0, 0, 0, 0, 0, 0, [() => AirflowConfigurationOptions, 0], 0, 1, 0, 0, () => LoggingConfigurationInput$, 0, 128 | 0, 0, 1, 1, 0, 1, 1],
+      [_N, _ERA, _SBA, _DSP, _NC, _PSP, _PSOV, _RSP, _RSOV, _SSSP, _SSSOV, _ACO, _EC, _MW, _KK, _AV, _LC, _WMWS, _Ta2, _WAM, _MWi, _S, _EM, _MWin, _MWa, _ICC, _Te],
+      [[0, 1], 0, 0, 0, () => NetworkConfiguration$, 0, 0, 0, 0, 0, 0, [() => AirflowConfigurationOptions, 0], 0, 1, 0, 0, () => LoggingConfigurationInput$, 0, 128 | 0, 0, 1, 1, 0, 1, 1, () => IdentityCenterConfiguration$, () => TeamMap],
       5
     ];
     var CreateEnvironmentOutput$ = [
@@ -47626,8 +47635,8 @@ var require_dist_cjs16 = __commonJS({
       n05,
       _E2,
       0,
-      [_N, _St, _A2, _CA2, _WU, _ERA, _SRA, _KK, _AV, _SBA, _DSP, _PSP, _PSOV, _RSP, _RSOV, _SSSP, _SSSOV, _ACO, _EC, _MW, _NC, _LC, _LU, _WMWS, _Ta2, _WAM, _MWi, _S, _WVES, _DVES, _CEQ, _EM, _MWin, _MWa],
-      [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [() => AirflowConfigurationOptions, 0], 0, 1, () => NetworkConfiguration$, () => LoggingConfiguration$, () => LastUpdate$, 0, 128 | 0, 0, 1, 1, 0, 0, 0, 0, 1, 1]
+      [_N, _St, _A2, _CA2, _WU, _ERA, _SRA, _KK, _AV, _SBA, _DSP, _PSP, _PSOV, _RSP, _RSOV, _SSSP, _SSSOV, _ACO, _EC, _MW, _NC, _LC, _LU, _WMWS, _Ta2, _WAM, _MWi, _S, _WVES, _DVES, _CEQ, _EM, _MWin, _MWa, _ICC, _Te],
+      [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, [() => AirflowConfigurationOptions, 0], 0, 1, () => NetworkConfiguration$, () => LoggingConfiguration$, () => LastUpdate$, 0, 128 | 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, () => IdentityCenterConfiguration$, () => TeamMap]
     ];
     var GetEnvironmentInput$ = [
       3,
@@ -47645,6 +47654,14 @@ var require_dist_cjs16 = __commonJS({
       0,
       [_E2],
       [[() => Environment$, 0]]
+    ];
+    var IdentityCenterConfiguration$ = [
+      3,
+      n05,
+      _ICC,
+      0,
+      [_SU, _ISI],
+      [0, 0]
     ];
     var InvokeRestApiRequest$ = [
       3,
@@ -47797,6 +47814,15 @@ var require_dist_cjs16 = __commonJS({
       [],
       []
     ];
+    var TeamConfig$ = [
+      3,
+      n05,
+      _TC2,
+      0,
+      [_SBA, _DSP],
+      [0, 0],
+      2
+    ];
     var UntagResourceInput$ = [
       3,
       n05,
@@ -47819,8 +47845,8 @@ var require_dist_cjs16 = __commonJS({
       n05,
       _UEI,
       0,
-      [_N, _ERA, _ACO, _AV, _DSP, _EC, _LC, _MW, _MWi, _MWa, _MWin, _WRS, _NC, _PSP, _PSOV, _RSP, _RSOV, _S, _SBA, _SSSP, _SSSOV, _WAM, _WMWS],
-      [[0, 1], 0, [() => AirflowConfigurationOptions, 0], 0, 0, 0, () => LoggingConfigurationInput$, 1, 1, 1, 1, 0, () => UpdateNetworkConfigurationInput$, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+      [_N, _ERA, _ACO, _AV, _DSP, _EC, _LC, _MW, _MWi, _MWa, _MWin, _WRS, _NC, _PSP, _PSOV, _RSP, _RSOV, _S, _SBA, _SSSP, _SSSOV, _WAM, _WMWS, _ICC, _Te],
+      [[0, 1], 0, [() => AirflowConfigurationOptions, 0], 0, 0, 0, () => LoggingConfigurationInput$, 1, 1, 1, 1, 0, () => UpdateNetworkConfigurationInput$, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, () => IdentityCenterConfiguration$, () => UpdateTeamsInput$],
       1
     ];
     var UpdateEnvironmentOutput$ = [
@@ -47847,6 +47873,14 @@ var require_dist_cjs16 = __commonJS({
       [_SGI],
       [64 | 0],
       1
+    ];
+    var UpdateTeamsInput$ = [
+      3,
+      n05,
+      _UTI,
+      0,
+      [_AOU, _R],
+      [() => TeamMap, 64 | 0]
     ];
     var Dimensions = [
       1,
@@ -47875,6 +47909,14 @@ var require_dist_cjs16 = __commonJS({
         () => ConfigValue,
         0
       ]
+    ];
+    var TeamMap = [
+      2,
+      n05,
+      _TM,
+      0,
+      0,
+      () => TeamConfig$
     ];
     var CreateCliToken$ = [
       9,
@@ -48261,6 +48303,7 @@ var require_dist_cjs16 = __commonJS({
     exports2.GetEnvironmentCommand = GetEnvironmentCommand2;
     exports2.GetEnvironmentInput$ = GetEnvironmentInput$;
     exports2.GetEnvironmentOutput$ = GetEnvironmentOutput$;
+    exports2.IdentityCenterConfiguration$ = IdentityCenterConfiguration$;
     exports2.InternalServerException = InternalServerException3;
     exports2.InternalServerException$ = InternalServerException$3;
     exports2.InvokeRestApi$ = InvokeRestApi$;
@@ -48305,6 +48348,7 @@ var require_dist_cjs16 = __commonJS({
     exports2.TagResourceCommand = TagResourceCommand;
     exports2.TagResourceInput$ = TagResourceInput$;
     exports2.TagResourceOutput$ = TagResourceOutput$;
+    exports2.TeamConfig$ = TeamConfig$;
     exports2.Unit = Unit;
     exports2.UntagResource$ = UntagResource$;
     exports2.UntagResourceCommand = UntagResourceCommand;
@@ -48317,6 +48361,7 @@ var require_dist_cjs16 = __commonJS({
     exports2.UpdateError$ = UpdateError$;
     exports2.UpdateNetworkConfigurationInput$ = UpdateNetworkConfigurationInput$;
     exports2.UpdateStatus = UpdateStatus;
+    exports2.UpdateTeamsInput$ = UpdateTeamsInput$;
     exports2.ValidationException = ValidationException2;
     exports2.ValidationException$ = ValidationException$2;
     exports2.WebserverAccessMode = WebserverAccessMode;

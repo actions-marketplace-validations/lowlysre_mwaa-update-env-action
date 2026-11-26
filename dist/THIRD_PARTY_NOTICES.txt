@@ -645,7 +645,7 @@ Apache License
 
 The following npm package may be included in this product:
 
- - @aws-sdk/client-mwaa@3.1167.0
+ - @aws-sdk/client-mwaa@3.1172.0
 
 This package contains the following license:
 

@@ -16,12 +16,12 @@
   },
   "dependencies": {
     "@actions/core": "^3.0.1",
-    "@aws-sdk/client-mwaa": "^3.1167.0"
+    "@aws-sdk/client-mwaa": "^3.1172.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
     "esbuild": "^0.28.2",
-    "fast-check": "^4.10.2",
+    "fast-check": "^4.10.3",
     "third-party-notices": "^0.1.0",
     "typescript": "^7.0.2"
   }
